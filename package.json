@@ -1,0 +1,15 @@
+{
+  "name": "postbot",
+  "version": "0.1.0",
+  "description": "Local-first social media scheduler (Postiz-like). Zero dependencies.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env src/index.js",
+    "dev": "node --disable-warning=ExperimentalWarning --env-file-if-exists=.env --watch src/index.js",
+    "test": "node --disable-warning=ExperimentalWarning --test"
+  }
+}

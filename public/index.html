@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Postbot</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Postbot</h1>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-view="calendar">Takvim</button>
+      <button class="tab" data-view="list">Liste</button>
+    </nav>
+    <button id="new-post" class="primary">+ Yeni gönderi</button>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <h2>Kanallar</h2>
+        <button id="add-channel" class="ghost" title="Kanal ekle">+</button>
+      </div>
+      <ul id="channel-list" class="channel-list"></ul>
+    </aside>
+
+    <main>
+      <section id="view-calendar" class="view">
+        <div class="cal-toolbar">
+          <button id="prev-week" class="ghost">‹</button>
+          <button id="today" class="ghost">Bugün</button>
+          <button id="next-week" class="ghost">›</button>
+          <span id="week-label"></span>
+        </div>
+        <div id="calendar" class="calendar"></div>
+      </section>
+      <section id="view-list" class="view" hidden>
+        <div class="list-filters">
+          <select id="status-filter">
+            <option value="">Tüm durumlar</option>
+            <option value="scheduled">Zamanlanmış</option>
+            <option value="draft">Taslak</option>
+            <option value="published">Yayınlandı</option>
+            <option value="partial">Kısmi</option>
+            <option value="failed">Başarısız</option>
+          </select>
+        </div>
+        <div id="post-list" class="post-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="composer">
+    <form method="dialog" id="composer-form">
+      <h2 id="composer-title">Yeni gönderi</h2>
+      <div id="composer-channels" class="chips"></div>
+      <textarea id="content" rows="8" placeholder="Ne paylaşmak istersiniz?"></textarea>
+      <div id="counters" class="counters"></div>
+      <div id="media-preview" class="media-preview"></div>
+      <label class="upload">
+        <input type="file" id="media-input" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
+        <span>🖼 Görsel ekle</span>
+      </label>
+      <label class="field">
+        <span>Yayın zamanı</span>
+        <input type="datetime-local" id="scheduled-at" required>
+      </label>
+      <div id="targets-status" class="targets-status"></div>
+      <p id="composer-error" class="error" hidden></p>
+      <div class="actions">
+        <button type="button" id="delete-post" class="danger" hidden>Sil</button>
+        <span class="spacer"></span>
+        <button type="button" value="cancel" id="composer-cancel" class="ghost">Kapat</button>
+        <button type="button" id="save-draft" class="ghost">Taslak</button>
+        <button type="button" id="publish-now">Şimdi paylaş</button>
+        <button type="button" id="schedule" class="primary">Zamanla</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="channel-dialog">
+    <form id="channel-form">
+      <h2 id="channel-dialog-title">Kanal ekle</h2>
+      <label class="field">
+        <span>Platform</span>
+        <select id="channel-provider"></select>
+      </label>
+      <p id="provider-help" class="help"></p>
+      <label class="field">
+        <span>Görünen ad</span>
+        <input id="channel-name" maxlength="80">
+      </label>
+      <div id="provider-fields"></div>
+      <p id="channel-error" class="error" hidden></p>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" id="channel-cancel" class="ghost">İptal</button>
+        <button type="submit" class="primary">Kaydet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

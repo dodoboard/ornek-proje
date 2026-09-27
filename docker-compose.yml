@@ -1,0 +1,14 @@
+services:
+  postbot:
+    build: .
+    restart: unless-stopped
+    # Host tarafında yalnızca loopback'e açılır.
+    ports: ["127.0.0.1:3000:3000"]
+    env_file: [{ path: .env, required: false }]
+    environment:
+      HOST: 0.0.0.0
+      DATA_DIR: /data
+      ALLOWED_HOSTS: localhost,127.0.0.1
+    volumes: [postbot-data:/data]
+volumes:
+  postbot-data:
