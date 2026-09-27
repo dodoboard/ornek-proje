@@ -1,0 +1,7 @@
+# Core backend runtime (no AI / torch here — see README for platform-specific PyTorch install).
+fastapi==0.141.1
+starlette==1.7.0
+uvicorn[standard]==0.54.0
+pydantic==2.13.5
+pydantic-settings==2.15.0
+PyYAML==6.0.3

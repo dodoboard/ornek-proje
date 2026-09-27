@@ -28,3 +28,7 @@ phase0_report.json
 Thumbs.db
 .idea/
 .vscode/
+
+# Next.js generated
+next-env.d.ts
+*.tsbuildinfo
