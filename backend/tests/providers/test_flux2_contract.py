@@ -19,7 +19,7 @@ from PIL import Image
 
 from app.core.config import PerformanceProfile, Settings
 from app.core.errors import FileInvalidError, ProviderUnavailableError, VramOutOfMemoryError
-from app.providers.base import GenerationContext, ImageRequest
+from app.providers.base import GenerationContext, ImageRequest, InpaintRequest
 from app.providers.catalog import ModelSpec
 from app.providers.device import DeviceInfo
 from app.providers.image.flux2_diffusers import Flux2DiffusersProvider
@@ -36,6 +36,29 @@ class _Generator:
     def manual_seed(self, seed: int) -> _Generator:
         self.seed = seed
         return self
+
+
+class _InpaintPipe:
+    from_pipe_calls = 0
+
+    def __init__(self, base: Any) -> None:
+        self.base = base
+
+    @classmethod
+    def from_pipe(cls, pipe: Any) -> _InpaintPipe:
+        cls.from_pipe_calls += 1
+        return cls(pipe)
+
+    def __call__(self, **kwargs: Any) -> Any:
+        CALLS["inpaint"] = kwargs
+        callback = kwargs["callback_on_step_end"]
+        # Mirror diffusers: strength < 1 runs only the tail of the schedule.
+        for step in range(int(kwargs["num_inference_steps"] * kwargs["strength"])):
+            callback(self, step, 0, {})
+        size = kwargs["image"].size
+        return types.SimpleNamespace(
+            images=[Image.new("RGB", size) for _ in range(kwargs["num_images_per_prompt"])]
+        )
 
 
 class _Pipe:
@@ -80,6 +103,8 @@ def stubs(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     diffusers = types.ModuleType("diffusers")
     diffusers.__version__ = "0.40.0"  # type: ignore[attr-defined]
     diffusers.Flux2KleinPipeline = _Pipe  # type: ignore[attr-defined]
+    diffusers.Flux2KleinInpaintPipeline = _InpaintPipe  # type: ignore[attr-defined]
+    _InpaintPipe.from_pipe_calls = 0
     monkeypatch.setitem(sys.modules, "torch", torch)
     monkeypatch.setitem(sys.modules, "diffusers", diffusers)
     yield
@@ -222,4 +247,53 @@ def test_generate_requires_load(settings: Settings, tmp_path: Path) -> None:
 def test_capabilities_from_catalog(settings: Settings) -> None:
     caps = _provider(settings).capabilities()
     assert (caps.max_reference_images, caps.default_steps, caps.size_multiple) == (4, 4, 16)
-    assert caps.negative_prompt is False and caps.inpainting is False
+    assert caps.negative_prompt is False and caps.inpainting is True
+    dev = _provider(settings, pipeline_class="Flux2Pipeline").capabilities()
+    assert dev.inpainting is False  # FLUX.2 [dev] has no inpaint variant in diffusers 0.40
+
+
+def _inpaint_files(tmp_path: Path) -> tuple[Path, Path, Path]:
+    src, mask, ref = tmp_path / "src.png", tmp_path / "mask.png", tmp_path / "ref.png"
+    Image.new("RGB", (512, 384), (10, 20, 30)).save(src)
+    Image.new("RGB", (512, 384), (255, 255, 255)).save(mask)  # RGB on disk → provider passes L
+    Image.new("RGB", (64, 64)).save(ref)
+    return src, mask, ref
+
+
+def test_inpaint_reuses_weights_and_maps_arguments(stubs: None, settings: Settings, tmp_path: Path) -> None:
+    src, mask, ref = _inpaint_files(tmp_path)
+    provider = _provider(settings)
+    provider.load(CUDA, PerformanceProfile.BALANCED)
+    seen: list[float] = []
+    request = InpaintRequest(
+        prompt="replace the bottle", width=512, height=384, steps=10, seed=3, num_images=2,
+        image=src, mask=mask, strength=0.5, reference_images=[ref],
+    )  # fmt: skip
+    images = provider.inpaint(request, _ctx(tmp_path, seen))
+    provider.inpaint(request, _ctx(tmp_path, []))
+
+    call = CALLS["inpaint"]
+    assert _InpaintPipe.from_pipe_calls == 1  # cached, shares the loaded weights
+    assert call["mask_image"].mode == "L" and call["image"].mode == "RGB"
+    assert call["strength"] == 0.5 and call["num_inference_steps"] == 10
+    assert [g.seed for g in call["generator"]] == [3, 4]
+    assert len(call["image_reference"]) == 1
+    assert "guidance_scale" not in call
+    assert seen[-1] == 1.0 and len(seen) == 5  # progress reaches 100% even with strength 0.5
+    assert [im.size for im in images] == [(512, 384), (512, 384)]
+
+    provider.unload()
+    assert provider._inpaint_pipe is None
+
+
+def test_inpaint_unavailable_for_dev_pipeline(stubs: None, settings: Settings, tmp_path: Path) -> None:
+    src, mask, _ = _inpaint_files(tmp_path)
+    diffusers = sys.modules["diffusers"]
+    diffusers.Flux2Pipeline = _Pipe  # type: ignore[attr-defined]
+    provider = _provider(settings, pipeline_class="Flux2Pipeline")
+    provider.load(CUDA, PerformanceProfile.BALANCED)
+    with pytest.raises(ProviderUnavailableError):
+        provider.inpaint(
+            InpaintRequest(prompt="x", width=512, height=384, steps=1, seed=0, image=src, mask=mask),
+            _ctx(tmp_path, []),
+        )

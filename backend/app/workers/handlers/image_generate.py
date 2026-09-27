@@ -7,10 +7,7 @@ import secrets
 import time
 from typing import Any
 
-from app.core.ids import IdPrefix, new_id
-from app.db.base import utcnow
 from app.models.enums import JobStatus
-from app.models.generation import Generation
 from app.providers.base import (
     ImageCapabilities,
     ImageGenerationProvider,
@@ -19,8 +16,7 @@ from app.providers.base import (
     ProviderKind,
 )
 from app.schemas.generation import MAX_SEED, ImageGenerateRequest
-from app.services.character_studio import record_seeds
-from app.services.generated_media import delete_media_files, store_generated_image
+from app.services.generation_store import ImageGenerationRecord, save_image_generation
 from app.services.image_generation import check_against_capabilities, resolve_references
 from app.services.storage import StorageService
 from app.workers.context import JobContext
@@ -73,72 +69,36 @@ def run_image_generate(ctx: JobContext) -> dict[str, Any]:
 
     ctx.report(92, stage="Saving images")
     seeds = [seed + i for i in range(len(images))]
-    generation_id = new_id(IdPrefix.GENERATION)
-    created_at = utcnow().isoformat()
-    stored = []
-    with ctx.session() as session:
-        try:
-            for image, image_seed in zip(images, seeds, strict=True):
-                disclosure = {
-                    "generated_with_ai": not placeholder,
-                    "dev_placeholder": placeholder,
-                    "model": model_key,
-                    "provider": provider_name,
-                    "seed": image_seed,
-                    "created_at": created_at,
-                    "generation_id": generation_id,
-                    "project_id": request.project_id,
-                    "character_id": request.character_id,
-                    "source_asset_ids": request.reference_asset_ids,
-                }
-                stored.append(
-                    store_generated_image(
-                        session, storage, image, disclosure, watermark=bool(request.watermark)
-                    )
-                )
-            session.add(
-                Generation(
-                    id=generation_id,
-                    kind="image",
-                    job_id=ctx.job_id,
-                    project_id=request.project_id,
-                    character_id=request.character_id,
-                    provider=provider_name,
-                    model_key=model_key,
-                    model_source=model_source,
-                    params={
-                        "prompt": request.prompt,
-                        "width": request.width,
-                        "height": request.height,
-                        "steps": steps,
-                        "guidance_scale": request.guidance_scale,
-                        "num_images": count,
-                        "watermark": bool(request.watermark),
-                        "purpose": request.purpose,
-                    },
-                    seeds=seeds,
-                    input_asset_ids=request.reference_asset_ids,
-                    output_asset_ids=[a.id for a in stored],
-                    duration_ms=duration_ms,
-                    device=ctx.models.device.to_dict(),
-                )
-            )
-            if request.character_id and request.purpose:
-                record_seeds(
-                    session,
-                    request.character_id,
-                    request.purpose,
-                    generation_id,
-                    model_key,
-                    [(a.id, seed_) for a, seed_ in zip(stored, seeds, strict=True)],
-                )
-            session.commit()
-        except BaseException:
-            session.rollback()
-            delete_media_files(storage, stored)
-            raise
-
-    logger.info(
-        "image_generated", extra={"generation_id": generation_id, "count": len(stored), "ms": duration_ms}
+    generation_id, asset_ids = save_image_generation(
+        ctx.session,
+        storage,
+        images,
+        ImageGenerationRecord(
+            kind="image",
+            job_id=ctx.job_id,
+            provider=provider_name,
+            model_key=model_key,
+            model_source=model_source,
+            placeholder=placeholder,
+            seeds=seeds,
+            params={
+                "prompt": request.prompt,
+                "width": request.width,
+                "height": request.height,
+                "steps": steps,
+                "guidance_scale": request.guidance_scale,
+                "num_images": count,
+            },
+            input_asset_ids=request.reference_asset_ids,
+            duration_ms=duration_ms,
+            device=ctx.models.device.to_dict(),
+            watermark=bool(request.watermark),
+            project_id=request.project_id,
+            character_id=request.character_id,
+            purpose=request.purpose,
+        ),
     )
-    return {"generation_id": generation_id, "asset_ids": [a.id for a in stored], "seeds": seeds}
+    logger.info(
+        "image_generated", extra={"generation_id": generation_id, "count": len(asset_ids), "ms": duration_ms}
+    )
+    return {"generation_id": generation_id, "asset_ids": asset_ids, "seeds": seeds}

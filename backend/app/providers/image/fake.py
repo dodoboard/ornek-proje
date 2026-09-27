@@ -15,6 +15,7 @@ from app.providers.base import (
     ImageCapabilities,
     ImageGenerationProvider,
     ImageRequest,
+    InpaintRequest,
     Maturity,
     ProviderStatus,
 )
@@ -32,7 +33,7 @@ class FakeImageProvider(ImageGenerationProvider):
 
     def capabilities(self) -> ImageCapabilities:
         return ImageCapabilities(
-            text_to_image=True, image_edit=True, max_reference_images=4, inpainting=False,
+            text_to_image=True, image_edit=True, max_reference_images=4, inpainting=True,
             negative_prompt=False, guidance=False, min_size=64, max_size=2048, size_multiple=16,
             max_images_per_request=4, default_steps=4,
         )  # fmt: skip
@@ -53,6 +54,22 @@ class FakeImageProvider(ImageGenerationProvider):
             _paste_references(image, request.reference_images)
             images.append(image)
         return images
+
+    def inpaint(self, request: InpaintRequest, ctx: GenerationContext) -> list[Image.Image]:
+        """Placeholder fill inside the mask; unmasked pixels are left for the caller to restore."""
+        assert request.image is not None and request.mask is not None
+        with Image.open(request.image) as src:
+            source = src.convert("RGB")
+        with Image.open(request.mask) as m:
+            mask = m.convert("L")
+        outputs = []
+        for index in range(request.num_images):
+            for step in range(request.steps):
+                ctx.progress((index * request.steps + step + 1) / (request.num_images * request.steps))
+            fill = render_placeholder(source.width, source.height, request.seed + index, request.prompt)
+            _paste_references(fill, request.reference_images)
+            outputs.append(Image.composite(fill, source, mask))
+        return outputs
 
 
 def _paste_references(image: Image.Image, references: list[Path]) -> None:

@@ -32,7 +32,7 @@ def test_load_mask_binarizes_and_resizes(tmp_path: Path) -> None:
     src.save(path)
     mask = load_mask(path, (100, 80))
     assert mask.mode == "L" and mask.size == (100, 80)
-    assert set(mask.getdata()) == {0, 255}
+    assert set(mask.tobytes()) == {0, 255}
     assert mask.getpixel((30, 30)) == 255 and mask.getpixel((70, 30)) == 0
 
 

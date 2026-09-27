@@ -16,7 +16,13 @@ from PIL import Image
 
 from app.core.config import PerformanceProfile
 from app.core.errors import FileInvalidError, ProviderUnavailableError
-from app.providers.base import GenerationContext, ImageCapabilities, ImageGenerationProvider, ImageRequest
+from app.providers.base import (
+    GenerationContext,
+    ImageCapabilities,
+    ImageGenerationProvider,
+    ImageRequest,
+    InpaintRequest,
+)
 from app.providers.catalog import resolve_local_path
 from app.providers.device import DeviceInfo
 from app.providers.memory import apply_pipeline_optimizations
@@ -28,6 +34,8 @@ logger = logging.getLogger(__name__)
 
 SIZE_MULTIPLE = 16
 MIN_DIFFUSERS = "0.40.0"
+# Base pipeline class → inpaint variant with identical components (reused via `from_pipe`).
+INPAINT_PIPELINES = {"Flux2KleinPipeline": "Flux2KleinInpaintPipeline"}
 
 
 class Flux2DiffusersProvider(ImageGenerationProvider):
@@ -36,6 +44,7 @@ class Flux2DiffusersProvider(ImageGenerationProvider):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._pipe: Any = None
+        self._inpaint_pipe: Any = None
         self._distilled: bool | None = None
 
     # ------------------------------------------------------------------ metadata
@@ -51,7 +60,7 @@ class Flux2DiffusersProvider(ImageGenerationProvider):
             text_to_image=True,
             image_edit=True,
             max_reference_images=int(self.spec.option("max_reference_images", 0)),
-            inpainting=False,  # Flux2KleinInpaintPipeline wiring arrives with Image Studio (Phase 7)
+            inpainting=self.spec.pipeline_class in INPAINT_PIPELINES,
             negative_prompt=False,
             guidance=not self.distilled,
             min_size=256,
@@ -101,6 +110,7 @@ class Flux2DiffusersProvider(ImageGenerationProvider):
         )
 
     def unload(self) -> None:
+        self._inpaint_pipe = None
         self._pipe = None
         self._loaded = False
 
@@ -137,6 +147,59 @@ class Flux2DiffusersProvider(ImageGenerationProvider):
 
         with torch.inference_mode():
             result = self._pipe(**kwargs)
+        return list(result.images)
+
+    def _get_inpaint_pipe(self) -> Any:
+        if self._inpaint_pipe is None:
+            import diffusers
+
+            name = INPAINT_PIPELINES.get(self.spec.pipeline_class or "")
+            cls = getattr(diffusers, name, None) if name else None
+            if cls is None:
+                raise ProviderUnavailableError("This FLUX.2 model has no inpainting pipeline.")
+            self._inpaint_pipe = cls.from_pipe(self._pipe)  # shares the already-loaded weights
+        return self._inpaint_pipe
+
+    def inpaint(self, request: InpaintRequest, ctx: GenerationContext) -> list[PILImage]:
+        """Repaint the white mask area. Output size = source size (caller pre-snaps to 16)."""
+        if self._pipe is None:
+            raise ProviderUnavailableError("The FLUX.2 model is not loaded.")
+        if request.image is None or request.mask is None:
+            raise FileInvalidError("Inpainting needs a source image and a mask.")
+        import torch
+
+        pipe = self._get_inpaint_pipe()
+        source = _open_rgb(request.image)
+        with Image.open(request.mask) as m:
+            mask = m.convert("L")
+        references = [_open_rgb(path) for path in request.reference_images]
+        generators = [
+            torch.Generator(device="cpu").manual_seed(request.seed + i) for i in range(request.num_images)
+        ]
+        # strength < 1 skips the first steps, so fewer callbacks fire than `steps`.
+        total = max(1, int(request.steps * request.strength))
+
+        def on_step(_pipe: Any, step: int, _timestep: Any, callback_kwargs: dict[str, Any]) -> dict[str, Any]:
+            ctx.progress(min(1.0, (step + 1) / total))
+            return callback_kwargs
+
+        kwargs: dict[str, Any] = {
+            "prompt": request.prompt,
+            "image": source,
+            "mask_image": mask,
+            "strength": request.strength,
+            "num_inference_steps": request.steps,
+            "num_images_per_prompt": request.num_images,
+            "generator": generators,
+            "callback_on_step_end": on_step,
+        }
+        if references:
+            kwargs["image_reference"] = references
+        if request.guidance_scale is not None and not self.distilled:
+            kwargs["guidance_scale"] = request.guidance_scale
+
+        with torch.inference_mode():
+            result = pipe(**kwargs)
         return list(result.images)
 
 
