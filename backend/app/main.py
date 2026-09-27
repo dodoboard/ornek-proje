@@ -12,7 +12,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import __version__
 from app.api.errors import register_exception_handlers
 from app.api.middleware import RequestContextMiddleware
-from app.api.routers import assets, characters, consents, health, products, projects, properties, system
+from app.api.routers import (
+    assets,
+    characters,
+    consents,
+    health,
+    jobs,
+    products,
+    projects,
+    properties,
+    system,
+)
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging
 from app.core.runtime import apply_process_env, ensure_data_dirs
@@ -76,6 +86,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         products.router,
         properties.router,
         projects.router,
+        jobs.router,
     ):
         app.include_router(router, prefix=API_PREFIX)
     return app

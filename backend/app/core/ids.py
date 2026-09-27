@@ -27,6 +27,7 @@ class IdPrefix(StrEnum):
     VOICE = "VOC"
     CONSENT = "CNS"
     TIMELINE = "TL"
+    WORKER = "WRK"
 
 
 def _encode(value: int, length: int) -> str:

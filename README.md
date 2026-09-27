@@ -2,7 +2,7 @@
 
 Local-first AI content studio: consistent AI influencers, product ads, real-estate/land videos. FLUX.2 for images, a separate local video model for motion, FFmpeg for final composition. No paid cloud API is required at runtime.
 
-> Status: **Phase 2 — database + API foundation.** CRUD for characters, products, properties/land, projects, consents and validated asset uploads. No generation features yet.
+> Status: **Phase 3 — job system.** Database/API foundation plus a background worker with a SQLite-backed queue, live progress (SSE), cancellation and crash recovery. No generation features yet.
 > See `docs/PHASE0_VALIDATION.md` for verified integrations and open items, and `MODEL_LICENSES.md` before downloading any model.
 
 ## Layout
@@ -55,7 +55,9 @@ backend/.venv/bin/python -m pip install -r backend/requirements/dev.txt
 ./scripts/dev.sh
 ```
 
-Open http://127.0.0.1:3000 (API: http://127.0.0.1:8000/docs). Both servers bind to localhost only.
+The dev script starts three processes: API (`uvicorn`), job worker (`python -m app.workers.supervisor`) and the Next.js dev server. Open http://127.0.0.1:3000 (API: http://127.0.0.1:8000/docs). Everything binds to localhost only.
+
+To run the worker on its own (from `backend/`, venv active): `python -m app.workers` (add `--once` to process a single job).
 
 ## Database
 
@@ -67,7 +69,7 @@ alembic check               # fail if models and migrations diverge
 alembic revision --autogenerate -m "describe change"   # after changing app/models
 ```
 
-## API (Phase 2)
+## API
 
 Interactive docs: http://127.0.0.1:8000/docs. All errors use `{"error": {"code", "message"}}`.
 
@@ -79,12 +81,27 @@ Interactive docs: http://127.0.0.1:8000/docs. All errors use `{"error": {"code",
 | Properties / land | same shape under `/api/properties` (`?category=property|land`) |
 | Projects | `GET/POST /api/projects`, `GET/PATCH/DELETE /api/projects/{id}` |
 | Consents | `GET/POST /api/consents`, `GET /api/consents/{id}`, `POST /api/consents/{id}/revoke` |
+| Jobs | `GET /api/jobs` (`?active=`, `?status=`, `?type=`, `?project_id=`), `GET /api/jobs/{id}`, `DELETE /api/jobs/{id}` (cancel), `GET /api/jobs/{id}/events` (SSE) |
+| System | `GET /api/health`, `GET /api/system` (incl. worker status), `POST /api/system/diagnostics` |
 
 Data rules enforced server-side:
 
 - **Uploads:** JPEG/PNG/WEBP/MP4/MOV/WAV/MP3/M4A only, detected from file contents (not the name). Images are fully decoded with a pixel limit; video/audio are checked with `ffprobe`. SVG, GIF and anything else are rejected. Files are stored as `AST_<id>.<ext>`; the original name is kept only as metadata.
 - **Characters:** `adult_age` must be 18–120 (API and DB constraint). Descriptions that reference minors (EN/TR keyword guard) are rejected. `is_real_person=true` requires an active **face** consent record; revoking it blocks further edits and reference uploads.
 - **Products / properties:** price requires a currency; coordinates must be given as a pair; unknown facts stay `null`. `mark_facts_verified` stamps `facts_verified_at`; changing any fact later clears it.
+
+## Job system (Phase 3)
+
+Generation work never runs inside an HTTP request. The API writes a row to the `jobs` table; a separate worker process claims it and runs it.
+
+- **Queue:** the `jobs` table itself. Claiming is one atomic `UPDATE … WHERE status='queued' … RETURNING`, so two workers can never take the same job (tested with 3 concurrent processes). Order: priority, then FIFO. One job at a time per worker (single GPU).
+- **Status:** `queued → running / loading_model / generating_* / processing_product / lip_sync / creating_captions / encoding → completed | failed | cancelled`, with `progress` 0–100, `stage` text and elapsed time.
+- **Progress:** `GET /api/jobs/{id}/events` streams Server-Sent Events (`event: job`) until the job ends; the UI falls back to polling if the stream is unavailable.
+- **Cancel:** `DELETE /api/jobs/{id}`. Queued jobs are cancelled immediately. Running jobs stop at the next checkpoint (progress report or model step callback); child processes (FFmpeg, lip-sync) are terminated, then killed after 5 s. The job's temp directory is always removed.
+- **Crashes:** the worker heart-beats every 5 s. If it dies, jobs it was running are marked `WORKER_LOST` after 60 s; the supervisor restarts the worker with exponential backoff. Errors shown to users are codes and short messages; tracebacks stay in the worker log.
+- **Self-test:** "Run diagnostics" on the dashboard (or `POST /api/system/diagnostics`) runs a real job: storage write, disk space, an FFmpeg H.264 test encode with live progress, GPU driver query and ML package check.
+
+Relevant settings (`.env`): `WORKER_POLL_INTERVAL_S`, `WORKER_HEARTBEAT_INTERVAL_S`, `WORKER_STALE_AFTER_S`, `JOB_PROGRESS_MIN_INTERVAL_S`, `SSE_POLL_INTERVAL_S`.
 
 ## Checks
 

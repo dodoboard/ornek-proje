@@ -11,6 +11,9 @@ export type ProjectSettings = Schemas["ProjectSettings"];
 export type CharacterSummary = Schemas["CharacterSummary"];
 export type ProductSummary = Schemas["ProductSummary"];
 export type PropertySummary = Schemas["PropertySummary"];
+export type JobRead = Schemas["JobRead"];
+export type JobStatus = JobRead["status"];
+export type WorkerStatus = Schemas["WorkerStatus"];
 
 export interface Page<T> {
   items: T[];
@@ -90,6 +93,15 @@ export interface ListParams {
 export const api = {
   health: () => apiFetch<HealthResponse>("/api/health"),
   system: () => apiFetch<SystemResponse>("/api/system"),
+  runDiagnostics: () => apiFetch<JobRead>("/api/system/diagnostics", { method: "POST" }),
+
+  jobs: {
+    list: (params: ListParams & { active?: boolean; type?: string } = {}) =>
+      apiFetch<Page<JobRead>>(`/api/jobs${query({ ...params, active: params.active?.toString() })}`),
+    get: (id: string) => apiFetch<JobRead>(`/api/jobs/${encodeURIComponent(id)}`),
+    cancel: (id: string) => apiFetch<JobRead>(`/api/jobs/${encodeURIComponent(id)}`, { method: "DELETE" }),
+    eventsUrl: (id: string) => `${API_BASE_URL}/api/jobs/${encodeURIComponent(id)}/events`,
+  },
 
   projects: {
     list: (params: ListParams & { type?: ProjectType } = {}) =>

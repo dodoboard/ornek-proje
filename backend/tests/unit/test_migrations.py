@@ -26,3 +26,17 @@ def test_downgrade_and_upgrade_roundtrip(tmp_path: Path) -> None:
     command.upgrade(config, "head")
     command.downgrade(config, "base")
     command.upgrade(config, "head")
+
+
+def test_is_at_head_and_wait_for_schema(tmp_path: Path) -> None:
+    import pytest
+
+    from app.db.migrations import is_at_head, wait_for_schema
+
+    url = f"sqlite:///{(tmp_path / 'w.db').as_posix()}"
+    assert not is_at_head(url)
+    with pytest.raises(RuntimeError):
+        wait_for_schema(url, timeout_s=0.2, poll_s=0.05)
+    command.upgrade(alembic_config(url), "head")
+    assert is_at_head(url)
+    wait_for_schema(url, timeout_s=1)

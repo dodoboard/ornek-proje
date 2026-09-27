@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,6 +11,7 @@ from PIL import Image, UnidentifiedImageError
 
 from app.core.errors import FfmpegMissingError, FileInvalidError, UnsupportedFormatError
 from app.models.enums import AssetKind
+from app.services.ffmpeg.binary import resolve_binary
 
 SNIFF_BYTES = 32
 FFPROBE_TIMEOUT_S = 30.0
@@ -121,10 +121,7 @@ def _to_float(value: object) -> float | None:
 
 
 def validate_av(path: Path, file_type: FileType, ffprobe_path: Path | None) -> MediaInfo:
-    if ffprobe_path is not None:
-        ffprobe = str(ffprobe_path) if ffprobe_path.is_file() else None
-    else:
-        ffprobe = shutil.which("ffprobe")
+    ffprobe = resolve_binary("ffprobe", ffprobe_path)
     if ffprobe is None:
         raise FfmpegMissingError("FFprobe is required to validate video and audio uploads.")
     data = _run_ffprobe(ffprobe, path)

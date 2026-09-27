@@ -7,9 +7,16 @@ interface MeterProps {
   value: number;
   max: number;
   caption: string;
+  /** "usage" turns amber/red near capacity; "progress" stays on the accent color. */
+  variant?: "usage" | "progress";
 }
 
-export function Meter({ label, value, max, caption }: MeterProps) {
+function barColor(pct: number, variant: MeterProps["variant"]): string {
+  if (variant === "progress") return "bg-accent";
+  return pct > 90 ? "bg-danger" : pct > 75 ? "bg-warning" : "bg-accent";
+}
+
+export function Meter({ label, value, max, caption, variant = "usage" }: MeterProps) {
   const pct = percent(value, max);
   return (
     <div>
@@ -26,7 +33,7 @@ export function Meter({ label, value, max, caption }: MeterProps) {
         className="h-1.5 overflow-hidden rounded-full bg-surface-raised"
       >
         <div
-          className={clsx("h-full rounded-full", pct > 90 ? "bg-danger" : pct > 75 ? "bg-warning" : "bg-accent")}
+          className={clsx("h-full rounded-full transition-[width] duration-300", barColor(pct, variant))}
           style={{ width: `${pct}%` }}
         />
       </div>

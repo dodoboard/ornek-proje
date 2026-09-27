@@ -4,6 +4,8 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from app.schemas.job import WorkerStatus
+
 ComponentStatus = Literal["ok", "missing", "error", "unknown"]
 
 
@@ -60,3 +62,4 @@ class SystemResponse(BaseModel):
     ffmpeg: BinaryStatus
     ffprobe: BinaryStatus
     storage: StorageStatus
+    worker: WorkerStatus = WorkerStatus(status="offline")

@@ -3,6 +3,7 @@
 from app.models.asset import Asset
 from app.models.character import Character
 from app.models.consent import Consent
+from app.models.job import Job, Worker
 from app.models.links import CharacterAsset, ProductAsset, PropertyAsset
 from app.models.product import Product
 from app.models.project import Project
@@ -13,9 +14,11 @@ __all__ = [
     "Character",
     "CharacterAsset",
     "Consent",
+    "Job",
     "Product",
     "ProductAsset",
     "Project",
     "Property",
     "PropertyAsset",
+    "Worker",
 ]

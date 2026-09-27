@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from logging.config import fileConfig
+from typing import Any, Literal
 
 from alembic import context
 from sqlalchemy import Connection
 
 import app.models  # noqa: F401  (registers all tables)
 from app.core.config import get_settings
-from app.db.base import Base
+from app.db.base import Base, UTCDateTime
 from app.db.session import create_db_engine
 
 config = context.config
@@ -23,6 +24,13 @@ def _database_url() -> str:
     return url
 
 
+def _render_item(type_: str, obj: Any, autogen_context: Any) -> str | Literal[False]:
+    """Render app TypeDecorators as their plain SQLAlchemy impl so migrations don't import app code."""
+    if type_ == "type" and isinstance(obj, UTCDateTime):
+        return "sa.DateTime(timezone=True)"
+    return False
+
+
 def _configure(connection: Connection | None = None, url: str | None = None) -> None:
     context.configure(
         connection=connection,
@@ -31,6 +39,7 @@ def _configure(connection: Connection | None = None, url: str | None = None) -> 
         render_as_batch=True,  # SQLite needs batch mode for ALTER TABLE
         compare_type=True,
         literal_binds=connection is None,
+        render_item=_render_item,
     )
 
 

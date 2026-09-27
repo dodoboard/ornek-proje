@@ -96,6 +96,13 @@ class Settings(BaseSettings):
     max_image_pixels: int = Field(default=40_000_000, ge=1)
     auto_migrate: bool = True
 
+    # Job system
+    worker_poll_interval_s: float = Field(default=1.0, gt=0)
+    worker_heartbeat_interval_s: float = Field(default=5.0, gt=0)
+    worker_stale_after_s: float = Field(default=60.0, gt=0)
+    job_progress_min_interval_s: float = Field(default=0.5, ge=0)
+    sse_poll_interval_s: float = Field(default=0.5, gt=0)
+
     # Fake providers produce placeholder output for UI/backend development without a GPU.
     enable_fake_providers: bool = False
 

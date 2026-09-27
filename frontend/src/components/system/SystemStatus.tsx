@@ -9,6 +9,8 @@ import { useSystem } from "@/hooks/useSystem";
 import type { SystemResponse } from "@/lib/api/client";
 import { formatGigabytes, formatMegabytes } from "@/lib/utils/format";
 
+import { DiagnosticsCard } from "./DiagnosticsCard";
+
 type ComponentStatus = SystemResponse["gpu"]["status"];
 
 const STATUS_TONE: Record<ComponentStatus, BadgeTone> = {
@@ -63,7 +65,14 @@ function StorageCard({ storage }: { storage: SystemResponse["storage"] }) {
 }
 
 function RuntimeCard({ system }: { system: SystemResponse }) {
+  const workerOnline = system.worker?.status === "online";
   const rows: [string, ReactNode][] = [
+    [
+      "Worker",
+      <Badge key="worker" tone={workerOnline ? "success" : "warning"}>
+        {workerOnline ? "online" : "offline"}
+      </Badge>,
+    ],
     ["FFmpeg", <StatusBadge key="ffmpeg" status={system.ffmpeg.status} />],
     ["FFprobe", <StatusBadge key="ffprobe" status={system.ffprobe.status} />],
     ["Telemetry", <Badge key="tel" tone="success">{system.privacy.telemetry_enabled ? "on" : "off"}</Badge>],
@@ -101,10 +110,13 @@ export function SystemStatus() {
     );
   }
   return (
-    <div className="grid gap-4 md:grid-cols-3">
-      <GpuCard gpu={data.gpu} />
-      <StorageCard storage={data.storage} />
-      <RuntimeCard system={data} />
+    <div className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-3">
+        <GpuCard gpu={data.gpu} />
+        <StorageCard storage={data.storage} />
+        <RuntimeCard system={data} />
+      </div>
+      <DiagnosticsCard workerOnline={data.worker?.status === "online"} />
     </div>
   );
 }

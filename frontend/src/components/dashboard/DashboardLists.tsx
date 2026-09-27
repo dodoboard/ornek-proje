@@ -1,6 +1,7 @@
 "use client";
 
 import { RecentList } from "@/components/dashboard/RecentList";
+import { ActiveJobs } from "@/components/jobs/ActiveJobs";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { api } from "@/lib/api/client";
@@ -19,9 +20,7 @@ export function DashboardLists() {
         toItem={(p) => ({ id: p.id, title: p.name, subtitle: projectTypeLabel(p.type) })}
         emptyText="Create a project to get started."
       />
-      <Card title="Active Jobs">
-        <EmptyState title="No job queue yet">Available from Phase 3.</EmptyState>
-      </Card>
+      <ActiveJobs />
       <Card title="Recent Generations">
         <EmptyState title="No generations yet">Available from Phase 5.</EmptyState>
       </Card>
