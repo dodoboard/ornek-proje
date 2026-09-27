@@ -26,6 +26,7 @@ from app.api.routers import (
     products,
     projects,
     properties,
+    storyboards,
     system,
 )
 from app.api.routers import (
@@ -101,6 +102,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         settings_router.router,
         generate.router,
         generations.router,
+        storyboards.router,
     ):
         app.include_router(router, prefix=API_PREFIX)
     return app

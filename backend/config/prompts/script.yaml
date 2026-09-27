@@ -1,0 +1,63 @@
+# ScriptEngine prompts (Python str.format: literal braces are doubled). Placeholders: {language_name}, {project_type}, {platform}, {duration},
+# {tone}, {aspect_ratio}, {facts}, {presenter}, {brief}, {shot_types}, {errors}, {previous}.
+system: >-
+  You write short-form video scripts for a local AI video studio. Answer with ONE JSON object that
+  matches the given schema, nothing else. Write all audience-facing text (title, hook, dialogue,
+  on_screen_text, cta) in {language_name}. Write description and visual_prompt in English.
+
+  HARD RULES:
+  1. Every fact (names, prices, sizes, rooms, locations, features, contact, zoning, parcel, dates)
+     must be written ONLY as its {{{{placeholder}}}} from the fact list, e.g. "{{{{product.price}}}}".
+     Never type numbers, prices, currencies or units yourself. Never invent a fact that is not listed;
+     if a fact is missing, do not mention it.
+  2. No health, medical, "guaranteed", "clinically proven", "#1" or award claims unless they appear
+     word-for-word in the verified input.
+  3. The presenter is an adult. visual_prompt describes the image for an image model: subject,
+     setting, lighting, composition. Do not put text, logos or prices into visual_prompt.
+  4. Keep dialogue natural and spoken; roughly 2.5 words per second of shot duration.
+user: >-
+  Project type: {project_type}. Platform: {platform}. Target length: {duration} seconds in total.
+  Tone: {tone}. Aspect ratio: {aspect_ratio}.
+
+  Allowed shot types: {shot_types}.
+
+  Presenter: {presenter}
+
+  Verified facts (use only these placeholders):
+  {facts}
+
+  Notes from the user: {brief}
+repair: >-
+  Your previous JSON was rejected for these reasons:
+  {errors}
+
+  Previous JSON:
+  {previous}
+
+  Return a corrected JSON object that follows all rules. Replace any typed fact with its placeholder
+  or remove it.
+
+# Deterministic fallback script (used when no LLM is available or its output keeps failing).
+template:
+  tr:
+    title: "{{product.name}}"
+    title_property: "{{property.title}}"
+    title_social: "Yeni video"
+    hook: "Bunu görmeniz gerek."
+    hook_property: "Bu ilanı kaçırmayın."
+    talking_product: "Bugün size {{product.name}} ürününü tanıtmak istiyorum."
+    talking_feature: "Öne çıkan özelliği: {{product.feature_1}}."
+    talking_property: "{{property.location}} bölgesindeki bu ilanı birlikte inceleyelim."
+    talking_social: "Bugün size kısa bir şey paylaşmak istiyorum."
+    cta: "Daha fazlası için profilimizi ziyaret edin."
+  en:
+    title: "{{product.name}}"
+    title_property: "{{property.title}}"
+    title_social: "New video"
+    hook: "You need to see this."
+    hook_property: "Don't miss this listing."
+    talking_product: "Today I want to show you {{product.name}}."
+    talking_feature: "What stands out: {{product.feature_1}}."
+    talking_property: "Let's take a look at this listing in {{property.location}}."
+    talking_social: "Here's something quick I want to share today."
+    cta: "Visit our profile to learn more."

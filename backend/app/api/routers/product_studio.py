@@ -5,15 +5,14 @@ from __future__ import annotations
 from fastapi import APIRouter, Request, status
 
 from app.api.deps import SessionDep, SettingsDep, StorageDep
-from app.core.errors import ModelMissingError, ProviderUnavailableError
 from app.models.enums import AssetRole
-from app.providers.base import ImageCapabilities, ProviderKind, ProviderStatus
-from app.providers.registry import ProviderInfo, ProviderRegistry
+from app.providers.base import ImageCapabilities, ProviderKind
 from app.schemas.job import JobRead
 from app.schemas.product_studio import ProductCutoutRequest, ProductSceneRequest
 from app.services import products
 from app.services.assets import get_asset
 from app.services.image_generation import image_path, resolve_references
+from app.services.model_selection import require_available
 from app.services.preferences import build_registry, load_preferences
 from app.services.product_studio import (
     check_scene_capabilities,
@@ -25,15 +24,6 @@ from app.workers.handlers.product import CUTOUT_JOB, PHOTO_ROLES, SCENE_JOB
 from app.workers.queue import JobQueue
 
 router = APIRouter(prefix="/products/{product_id}", tags=["product-studio"])
-
-
-def _available(registry: ProviderRegistry, kind: ProviderKind, key: str | None) -> ProviderInfo:
-    info = registry.describe(registry.entry(kind, key))
-    if info.status is ProviderStatus.MODEL_MISSING:
-        raise ModelMissingError(info.detail)
-    if info.status is not ProviderStatus.AVAILABLE:
-        raise ProviderUnavailableError(info.detail or f"'{info.key}' is not available.")
-    return info
 
 
 @router.post("/cutout", response_model=JobRead, status_code=status.HTTP_202_ACCEPTED)
@@ -55,7 +45,7 @@ def create_cutout(
         image_path(session, storage, body.mask_asset_id, "mask")
     else:
         registry = build_registry(settings, load_preferences(session, settings))
-        payload["model_key"] = _available(registry, ProviderKind.SEGMENTATION, body.model_key).key
+        payload["model_key"] = require_available(registry, ProviderKind.SEGMENTATION, body.model_key).key
     job = JobQueue(request.app.state.session_factory).enqueue(
         CUTOUT_JOB, {**payload, "product_id": product_id}
     )
@@ -86,7 +76,7 @@ def create_scene(
     }
     if body.uses_model:
         registry = build_registry(settings, prefs)
-        info = _available(registry, ProviderKind.IMAGE, body.model_key)
+        info = require_available(registry, ProviderKind.IMAGE, body.model_key)
         check_scene_capabilities(body, ImageCapabilities.model_validate(info.capabilities))
         update["model_key"] = info.key
     payload = body.model_copy(update=update).model_dump(mode="json")

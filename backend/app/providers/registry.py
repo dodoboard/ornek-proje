@@ -18,6 +18,7 @@ IMPLEMENTED: dict[str, type[Provider]] = {}
 FAKE_KEYS: dict[ProviderKind, str] = {
     ProviderKind.IMAGE: "dev_fake_image",
     ProviderKind.VIDEO: "dev_fake_video",
+    ProviderKind.LLM: "dev_fake_llm",
 }
 
 # Env overrides for the default model of each kind (spec §45).
@@ -37,11 +38,17 @@ def register_provider(name: str, cls: type[Provider]) -> None:
 def _register_builtin() -> None:
     from app.providers.image.fake import FakeImageProvider
     from app.providers.image.flux2_diffusers import Flux2DiffusersProvider
+    from app.providers.llm.fake import FakeLLMProvider
+    from app.providers.llm.llamacpp_server import LlamaCppServerProvider
+    from app.providers.llm.ollama import OllamaProvider
     from app.providers.segmentation.color_key import ColorKeySegmentationProvider
     from app.providers.segmentation.rembg_onnx import RembgSegmentationProvider
     from app.providers.video.fake import FakeVideoProvider
 
     IMPLEMENTED.setdefault("flux2_diffusers", Flux2DiffusersProvider)
+    IMPLEMENTED.setdefault("ollama", OllamaProvider)
+    IMPLEMENTED.setdefault("llamacpp_server", LlamaCppServerProvider)
+    IMPLEMENTED.setdefault("dev_fake_llm", FakeLLMProvider)
     IMPLEMENTED.setdefault("rembg_onnx", RembgSegmentationProvider)
     IMPLEMENTED.setdefault("color_key", ColorKeySegmentationProvider)
     IMPLEMENTED.setdefault("dev_fake_image", FakeImageProvider)

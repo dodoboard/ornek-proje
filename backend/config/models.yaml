@@ -94,13 +94,34 @@ video:
 llm:
   default: ollama_default
   models:
+    # Only loopback URLs are accepted: script text and product/property facts never leave the machine.
     ollama_default:
       provider: ollama
       base_url: http://127.0.0.1:11434
       # Ollama model tag; pick any locally pulled model with good Turkish support.
       model: qwen3:8b
-      verification: needs-user-machine
+      # Qwen3 is a thinking model; `think: false` keeps the JSON answer in `message.content`.
+      think: false
+      keep_alive: 0  # unload right after each request so FLUX/video get the VRAM
+      temperature: 0.4
+      verification: verified
       license_claim: "Depends on the chosen model (Qwen3: Apache-2.0, unverified)"
+      note: "Ollama API verified from docs/api.md; model quality in Turkish needs-user-machine."
+    gemma3_12b:
+      provider: ollama
+      base_url: http://127.0.0.1:11434
+      model: gemma3:12b
+      keep_alive: 0
+      temperature: 0.4
+      verification: needs-user-machine
+      license_claim: "Gemma Terms of Use (unverified)"
+    llamacpp_local:
+      provider: llamacpp_server
+      base_url: http://127.0.0.1:8080
+      temperature: 0.4
+      verification: verified
+      license_claim: "llama.cpp MIT; model: per GGUF file"
+      note: "Start llama-server yourself with any GGUF model; API verified from tools/server/README.md."
 
 tts:
   default: chatterbox_multilingual
