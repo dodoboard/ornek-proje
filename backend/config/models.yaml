@@ -1,0 +1,150 @@
+# Model registry — the ONLY place model repo IDs live. Code must never hard-code them.
+#
+# verification:
+#   verified            -> confirmed against upstream source/docs in Phase 0
+#   needs-user-machine  -> could not be confirmed from the build environment
+#                          (huggingface.co was unreachable); run
+#                          `python scripts/validate_env.py --check-hf` locally.
+#   experimental        -> API verified, but VRAM/licensing/quality not yet proven on 16 GB
+#
+# license_claim is informational only. ALWAYS read the model card yourself; see MODEL_LICENSES.md.
+# `local_path` (optional) overrides `repo_id` for fully offline use.
+
+image:
+  default: flux2_klein_4b
+  models:
+    flux2_klein_4b:
+      provider: flux2_diffusers
+      pipeline_class: Flux2KleinPipeline
+      repo_id: black-forest-labs/FLUX.2-klein-4B
+      local_path: null
+      distilled: true
+      verification: needs-user-machine
+      license_claim: "Apache-2.0 (unverified)"
+    flux2_klein_9b:
+      provider: flux2_diffusers
+      pipeline_class: Flux2KleinPipeline
+      repo_id: black-forest-labs/FLUX.2-klein-9B
+      local_path: null
+      distilled: true
+      verification: needs-user-machine
+      license_claim: "Non-commercial (unverified)"
+    flux2_klein_base_9b:
+      provider: flux2_diffusers
+      pipeline_class: Flux2KleinPipeline
+      # Repo ID appears in diffusers v0.40.0 pipeline_flux2_klein.py docstring.
+      repo_id: black-forest-labs/FLUX.2-klein-base-9B
+      local_path: null
+      distilled: false
+      verification: needs-user-machine
+      license_claim: "Non-commercial (unverified)"
+    flux2_dev:
+      provider: flux2_diffusers
+      pipeline_class: Flux2Pipeline
+      # Repo ID appears in diffusers v0.40.0 pipeline_flux2.py docstring.
+      repo_id: black-forest-labs/FLUX.2-dev
+      local_path: null
+      distilled: false
+      verification: experimental
+      license_claim: "FLUX.2 [dev] Non-Commercial License (unverified)"
+      note: "32B transformer + 24B text encoder; not practical on 16 GB VRAM / 32 GB RAM without quantization."
+  inpaint:
+    flux2_klein_inpaint:
+      provider: flux2_diffusers
+      pipeline_class: Flux2KleinInpaintPipeline
+      model_ref: flux2_klein_4b
+      verification: needs-user-machine
+
+video:
+  default: wan22_ti2v_5b
+  models:
+    wan22_ti2v_5b:
+      provider: wan_diffusers
+      # Listed in diffusers v0.40.0 docs/api/pipelines/wan.md.
+      # Pipeline class is read from the repo's model_index.json at load time.
+      repo_id: Wan-AI/Wan2.2-TI2V-5B-Diffusers
+      local_path: null
+      verification: needs-user-machine
+      license_claim: "Apache-2.0 (unverified)"
+    ltx2:
+      provider: ltx_diffusers
+      pipeline_class: LTX2ImageToVideoPipeline
+      # Listed in diffusers v0.40.0 docs/api/pipelines/ltx2.md.
+      repo_id: Lightricks/LTX-2
+      local_path: null
+      verification: experimental
+      license_claim: "LTX-2 community license (unverified; revenue-based terms)"
+
+llm:
+  default: ollama_default
+  models:
+    ollama_default:
+      provider: ollama
+      base_url: http://127.0.0.1:11434
+      # Ollama model tag; pick any locally pulled model with good Turkish support.
+      model: qwen3:8b
+      verification: needs-user-machine
+      license_claim: "Depends on the chosen model (Qwen3: Apache-2.0, unverified)"
+
+tts:
+  default: chatterbox_multilingual
+  models:
+    chatterbox_multilingual:
+      provider: chatterbox
+      # Runs in an isolated venv: chatterbox-tts pins torch==2.6.0 (no Blackwell sm_120 support).
+      venv_python: null
+      languages: [tr, en]
+      verification: verified
+      license_claim: "MIT (code, verified from repo LICENSE); weights: check model card"
+    piper:
+      provider: piper
+      voice_path: null
+      verification: verified
+      license_claim: "piper-tts: GPL-3.0-or-later; voices: per-voice license"
+
+lipsync:
+  default: latentsync_15
+  models:
+    latentsync_15:
+      provider: latentsync
+      # Isolated venv + cloned repo; README states 8 GB min VRAM for v1.5, 18 GB for v1.6.
+      repo_dir: null
+      venv_python: null
+      checkpoint_path: null
+      verification: experimental
+      license_claim: "Apache-2.0 (code, verified from repo LICENSE)"
+
+asr:
+  default: faster_whisper_large_v3
+  models:
+    faster_whisper_large_v3:
+      provider: faster_whisper
+      model: large-v3
+      compute_type_gpu: float16
+      compute_type_cpu: int8
+      verification: needs-user-machine
+      license_claim: "faster-whisper MIT; Whisper weights MIT (unverified)"
+
+segmentation:
+  default: birefnet
+  models:
+    birefnet:
+      provider: birefnet
+      repo_id: ZhengPeng7/BiRefNet
+      # trust_remote_code requires a pinned commit; set after reviewing the repo code.
+      revision: null
+      verification: needs-user-machine
+      license_claim: "MIT (unverified)"
+    rembg:
+      provider: rembg
+      verification: verified
+      license_claim: "rembg MIT; model weights: per model"
+
+upscale:
+  default: realesrgan_x4
+  models:
+    realesrgan_x4:
+      provider: spandrel
+      weights_path: null
+      verification: needs-user-machine
+      license_claim: "Real-ESRGAN BSD-3-Clause (unverified)"
