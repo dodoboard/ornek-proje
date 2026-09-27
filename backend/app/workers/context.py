@@ -18,6 +18,8 @@ from app.providers.base import GenerationContext
 from app.workers.queue import JobQueue
 
 if TYPE_CHECKING:
+    from sqlalchemy.orm import Session, sessionmaker
+
     from app.providers.model_manager import ModelManager
 
 logger = logging.getLogger(__name__)
@@ -51,9 +53,11 @@ class JobContext:
         clock: Callable[[], float] = time.monotonic,
         settings: Settings | None = None,
         models: ModelManager | None = None,
+        session_factory: sessionmaker[Session] | None = None,
     ) -> None:
         self.settings = settings
         self._models = models
+        self._session_factory = session_factory
         self.job_id = job_id
         self.job_type = job_type
         self.payload = payload
@@ -111,6 +115,12 @@ class JobContext:
             progress=self.stage_progress(start, end),
             run_subprocess=self.run_subprocess,
         )
+
+    def session(self) -> Session:
+        """New DB session for handler use (`with ctx.session() as s:`)."""
+        if self._session_factory is None:
+            raise RuntimeError("This job context has no database access.")
+        return self._session_factory()
 
     @property
     def models(self) -> ModelManager:

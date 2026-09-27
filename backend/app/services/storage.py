@@ -49,6 +49,17 @@ class StorageService:
         directory.mkdir(parents=True, exist_ok=True)
         return directory / f"{asset_id}{extension}"
 
+    def output_path(self, asset_id: str, category: str, extension: str, now: datetime | None = None) -> Path:
+        stamp = now or datetime.now(UTC)
+        directory = self.root / "outputs" / category / f"{stamp:%Y}" / f"{stamp:%m}"
+        directory.mkdir(parents=True, exist_ok=True)
+        return directory / f"{asset_id}{extension}"
+
+    def thumbnail_path(self, asset_id: str) -> Path:
+        directory = self.root / "thumbnails"
+        directory.mkdir(parents=True, exist_ok=True)
+        return directory / f"{asset_id}.webp"
+
     def temp_file(self, suffix: str = ".part") -> Path:
         directory = self.root / "temp"
         directory.mkdir(parents=True, exist_ok=True)

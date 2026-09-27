@@ -18,9 +18,14 @@ def test_models_lists_every_kind_with_status(client: TestClient) -> None:
     image = kinds["image"]
     assert image["default_key"] == "flux2_klein_4b"
     klein = next(p for p in image["providers"] if p["key"] == "flux2_klein_4b")
-    assert klein["status"] == "not_implemented"
+    # Implemented in Phase 5; this CI environment has no torch/diffusers.
+    assert klein["status"] in {"not_installed", "model_missing", "available"}
     assert klein["source"] == "black-forest-labs/FLUX.2-klein-4B"
     assert klein["is_default"] is True
+    assert klein["capabilities"]["negative_prompt"] is False
+    assert klein["capabilities"]["guidance"] is False  # distilled
+    video = kinds["video"]
+    assert all(p["status"] == "not_implemented" for p in video["providers"])
 
 
 def test_models_include_dev_fakes_when_enabled(settings: Settings) -> None:

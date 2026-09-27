@@ -53,7 +53,7 @@ class ModelManager:
                 self.unload(other)
         logger.info("model_loading", extra={"model": provider.key, "device": self.device.device})
         with translate_gpu_errors(loading=True):
-            provider.load(self.device)
+            provider.load(self.device, self.profile)
         self._loaded[slot] = provider
 
     def unload(self, provider: Provider) -> None:

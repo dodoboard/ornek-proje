@@ -2,7 +2,7 @@
 
 Local-first AI content studio: consistent AI influencers, product ads, real-estate/land videos. FLUX.2 for images, a separate local video model for motion, FFmpeg for final composition. No paid cloud API is required at runtime.
 
-> Status: **Phase 4 — model/provider architecture.** Provider interfaces, model registry with live status, central ModelManager (VRAM/precision/offload), Models and Settings pages. **No real AI model is integrated yet** — FLUX.2 arrives in Phase 5. Only clearly labelled dev placeholders can run.
+> Status: **Phase 5 — FLUX.2 image generation.** First real model integration (FLUX.2 [klein] via Diffusers) with text-to-image and reference images, stored with AI-disclosure metadata. The integration is verified against the diffusers v0.40.0 API with contract tests; **it has not yet been run on a GPU** — do the GPU check below on your machine.
 > See `docs/PHASE0_VALIDATION.md` for verified integrations and open items, and `MODEL_LICENSES.md` before downloading any model.
 
 ## Layout
@@ -85,6 +85,7 @@ Interactive docs: http://127.0.0.1:8000/docs. All errors use `{"error": {"code",
 | System | `GET /api/health`, `GET /api/system` (incl. worker status and runtime), `POST /api/system/diagnostics` |
 | Models | `GET /api/models` |
 | Settings | `GET /api/settings`, `PATCH /api/settings` (performance profile, default models, model paths, FFmpeg paths, offline mode, watermark, defaults) |
+| Generation | `POST /api/generate/image` (→ job), `GET /api/generations`, `GET /api/generations/{id}`, `GET /api/assets/{id}/thumbnail` |
 
 Data rules enforced server-side:
 
@@ -121,6 +122,31 @@ Relevant settings (`.env`): `WORKER_POLL_INTERVAL_S`, `WORKER_HEARTBEAT_INTERVAL
 - **Performance profiles** (Settings page): *Performance* keeps the pipeline on the GPU; *Balanced* uses model CPU offload; *Low VRAM* uses sequential offload, VAE tiling, attention slicing and unloads after every job. Only optimisations the pipeline object actually provides are called.
 - **Device detection** runs inside the worker and is shown on the Settings page (PyTorch/CUDA version, compute capability, whether the installed build has kernels for your GPU — e.g. `sm_120` for RTX 50-series).
 - **Dev placeholders:** `ENABLE_FAKE_PROVIDERS=true` adds `dev_fake_image` / `dev_fake_video`. They draw labelled gradients ("DEV PLACEHOLDER - NOT AI OUTPUT") and are refused in `APP_ENV=production`. Never mistake them for model output.
+
+## Image generation (Phase 5)
+
+### Install the AI stack (worker machine)
+
+1. **PyTorch with CUDA** — pick the command for your OS/CUDA on the official PyTorch "Get Started" selector. RTX 50-series (Blackwell, `sm_120`) needs a **CUDA 12.8 or newer** build; older builds install fine but cannot run on the GPU. Example (check the selector for the current index URL):
+   ```powershell
+   backend\.venv\Scripts\python -m pip install torch --index-url https://download.pytorch.org/whl/cu128
+   ```
+2. **Diffusers & co:** `backend\.venv\Scripts\python -m pip install -r backend\requirements\ai.txt`
+3. **Check:** `python scripts\validate_env.py` — `cuda_arch` must be `ok`, and `diffusers.Flux2KleinPipeline` must pass.
+4. **Download FLUX.2 [klein] 4B** (read its license first): `cd backend; python scripts\download_models.py image:flux2_klein_4b`
+5. Restart the worker; the Models page should show the model as **Ready**.
+
+### Use
+
+Image Studio → prompt, format (1:1 / 4:5 / 9:16 / 16:9, all multiples of 16), steps (empty = model default), seed (empty = random), 1–4 images, optional reference images (FLUX.2 multi-reference; limit from the model's capabilities). Progress streams live; Cancel stops at the next diffusion step.
+
+- The API rejects a request **before queueing** if the model is not ready or the request does not fit the model's capabilities (size multiple, max references, guidance on a distilled checkpoint).
+- FLUX.2 has **no negative-prompt parameter** (the pipeline fixes it to empty), and **distilled** checkpoints ignore guidance — the UI hides both instead of pretending they work.
+- Prompts and character descriptions referencing minors are rejected; characters marked as real people need an active face-consent record.
+- Every output is a PNG with an `ai_disclosure` text chunk (model, seed, generation id, source assets, timestamp) plus a DB `generations` record. The visible "AI generated" label is optional (Settings). Dev placeholders are marked `dev_placeholder: true` and `generated_with_ai: false`.
+- Seeds are reproducible for the same model, settings and hardware; they are **not** a character-consistency mechanism — use reference images (Phase 6 builds the Character Bible on top of this).
+
+Unverified until run on your GPU: default step counts and reference limits in `models.yaml` (check the model card), VRAM use and speed per profile.
 
 ## Checks
 

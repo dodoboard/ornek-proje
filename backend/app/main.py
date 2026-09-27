@@ -16,6 +16,8 @@ from app.api.routers import (
     assets,
     characters,
     consents,
+    generate,
+    generations,
     health,
     jobs,
     models,
@@ -93,6 +95,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         jobs.router,
         models.router,
         settings_router.router,
+        generate.router,
+        generations.router,
     ):
         app.include_router(router, prefix=API_PREFIX)
     return app

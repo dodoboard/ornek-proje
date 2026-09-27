@@ -7,6 +7,7 @@ import textwrap
 
 from PIL import Image, ImageDraw
 
+from app.core.config import PerformanceProfile
 from app.providers.base import (
     Availability,
     GenerationContext,
@@ -35,7 +36,7 @@ class FakeImageProvider(ImageGenerationProvider):
             max_images_per_request=4, default_steps=4,
         )  # fmt: skip
 
-    def load(self, device: DeviceInfo) -> None:
+    def load(self, device: DeviceInfo, profile: PerformanceProfile) -> None:
         self._loaded = True
 
     def unload(self) -> None:

@@ -27,8 +27,9 @@ class HandlerRegistry:
 
 
 def default_registry() -> HandlerRegistry:
-    from app.workers.handlers.diagnostics import JOB_TYPE, run_diagnostics
+    from app.workers.handlers import diagnostics, image_generate
 
     registry = HandlerRegistry()
-    registry.register(JOB_TYPE, run_diagnostics)
+    registry.register(diagnostics.JOB_TYPE, diagnostics.run_diagnostics)
+    registry.register(image_generate.JOB_TYPE, image_generate.run_image_generate)
     return registry

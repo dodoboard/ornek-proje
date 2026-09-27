@@ -22,6 +22,9 @@ export type ProviderStatus = Schemas["ProviderStatus"];
 export type Preferences = Schemas["PreferencesRead"];
 export type PreferencesUpdate = Schemas["PreferencesUpdate"];
 export type PerformanceProfile = Schemas["PerformanceProfile"];
+export type AssetRead = Schemas["AssetRead"];
+export type ImageGenerateRequest = Schemas["ImageGenerateRequest"];
+export type GenerationRead = Schemas["GenerationRead"];
 
 export interface Page<T> {
   items: T[];
@@ -102,6 +105,24 @@ export const api = {
   health: () => apiFetch<HealthResponse>("/api/health"),
   system: () => apiFetch<SystemResponse>("/api/system"),
   runDiagnostics: () => apiFetch<JobRead>("/api/system/diagnostics", { method: "POST" }),
+
+  assets: {
+    upload: (file: File) => {
+      const form = new FormData();
+      form.append("file", file);
+      return apiFetch<AssetRead>("/api/assets", { method: "POST", body: form });
+    },
+    contentUrl: (id: string) => `${API_BASE_URL}/api/assets/${encodeURIComponent(id)}/content`,
+    thumbnailUrl: (id: string) => `${API_BASE_URL}/api/assets/${encodeURIComponent(id)}/thumbnail`,
+  },
+  generate: {
+    image: (body: ImageGenerateRequest) => apiFetch<JobRead>("/api/generate/image", jsonInit("POST", body)),
+  },
+  generations: {
+    list: (params: ListParams & { kind?: string; project_id?: string; character_id?: string } = {}) =>
+      apiFetch<Page<GenerationRead>>(`/api/generations${query({ ...params })}`),
+    get: (id: string) => apiFetch<GenerationRead>(`/api/generations/${encodeURIComponent(id)}`),
+  },
 
   models: {
     list: () => apiFetch<ModelsResponse>("/api/models"),

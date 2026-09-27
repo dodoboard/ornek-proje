@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from app.core.config import Settings
+from app.core.config import PerformanceProfile, Settings
 from app.providers.base import GenerationContext, ImageRequest, VideoRequest
 from app.providers.catalog import ModelSpec
 from app.providers.device import DeviceInfo
@@ -28,7 +28,7 @@ def _ctx(tmp_path: Path, progress: list[float]) -> GenerationContext:
 
 def test_fake_image_is_labelled_and_deterministic(settings: Settings, tmp_path: Path) -> None:
     provider = FakeImageProvider("dev_fake_image", ModelSpec(provider="dev_fake_image"), settings)
-    provider.load(DeviceInfo(device="cpu", dtype="float32"))
+    provider.load(DeviceInfo(device="cpu", dtype="float32"), PerformanceProfile.BALANCED)
     progress: list[float] = []
     request = ImageRequest(prompt="perfume on marble", width=128, height=96, steps=3, seed=7, num_images=2)
     first = provider.generate(request, _ctx(tmp_path, progress))

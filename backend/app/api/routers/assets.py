@@ -10,6 +10,7 @@ from app.api.deps import EffectiveSettingsDep, SessionDep, StorageDep
 from app.core.errors import FileTooLargeError, NotFoundError
 from app.schemas.asset import AssetRead
 from app.services import assets as service
+from app.services.generated_media import ensure_thumbnail
 
 router = APIRouter(prefix="/assets", tags=["assets"])
 
@@ -51,6 +52,17 @@ def get_asset_content(asset_id: str, session: SessionDep, storage: StorageDep) -
         filename=path.name,
         content_disposition_type="inline",
         headers={"X-Content-Type-Options": "nosniff", "Cache-Control": "private, max-age=3600"},
+    )
+
+
+@router.get("/{asset_id}/thumbnail", response_class=FileResponse)
+def get_asset_thumbnail(asset_id: str, session: SessionDep, storage: StorageDep) -> FileResponse:
+    asset = service.get_asset(session, asset_id)
+    path = ensure_thumbnail(storage, asset)
+    return FileResponse(
+        path,
+        media_type="image/webp",
+        headers={"X-Content-Type-Options": "nosniff", "Cache-Control": "private, max-age=86400"},
     )
 
 

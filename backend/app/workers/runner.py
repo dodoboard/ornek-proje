@@ -9,6 +9,8 @@ import socket
 import threading
 from datetime import timedelta
 
+from pydantic import ValidationError
+
 from app.core.config import Settings
 from app.core.errors import AppError, ErrorCode
 from app.core.ids import IdPrefix, new_id
@@ -136,6 +138,7 @@ class Worker:
             min_report_interval_s=self.settings.job_progress_min_interval_s,
             settings=effective_settings(self.settings, prefs),
             models=self._model_manager(prefs),
+            session_factory=create_session_factory(self.queue.engine),
         )
         logger.info("job_started", extra={"type": job.type})
         try:
@@ -152,6 +155,9 @@ class Worker:
         except JobCancelled:
             self.queue.mark_cancelled(job.id)
             logger.info("job_cancelled")
+        except ValidationError:
+            self.queue.fail(job.id, ErrorCode.VALIDATION_ERROR, "The job payload is invalid.")
+            logger.warning("job_invalid_payload", exc_info=True)
         except AppError as exc:
             self.queue.fail(job.id, exc.code, exc.message)
             logger.warning("job_failed", extra={"code": exc.code.value})

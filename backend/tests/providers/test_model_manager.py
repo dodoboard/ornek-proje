@@ -33,8 +33,8 @@ class Tracked(ImageGenerationProvider):
     def capabilities(self) -> ImageCapabilities:
         return ImageCapabilities()
 
-    def load(self, device: DeviceInfo) -> None:
-        if self.spec.extra("fail_load"):
+    def load(self, device: DeviceInfo, profile: PerformanceProfile) -> None:
+        if self.spec.option("fail_load"):
             raise OSError("corrupt safetensors /secret/path")
         EVENTS.append(f"load:{self.key}")
         self._loaded = True

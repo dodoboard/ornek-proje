@@ -40,7 +40,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     href: "/image-studio",
     label: "Image Studio",
     icon: Image,
-    phase: 7,
+    phase: 5,
     description: "FLUX.2 text-to-image, reference-based generation and inpainting.",
   },
   {

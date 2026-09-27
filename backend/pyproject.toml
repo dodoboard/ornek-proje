@@ -26,6 +26,8 @@ python_version = "3.12"
 strict = true
 plugins = ["pydantic.mypy"]
 files = ["app"]
+# ModelManager.use(kind, <abstract provider base>) is intentional (isinstance check).
+disable_error_code = ["type-abstract"]
 
 [[tool.mypy.overrides]]
 # Optional heavy ML dependencies are imported lazily inside providers.

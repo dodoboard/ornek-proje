@@ -6,6 +6,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from app.core.config import PerformanceProfile
 from app.core.errors import FfmpegMissingError, GenerationFailedError
 from app.providers.base import (
     Availability,
@@ -37,7 +38,7 @@ class FakeVideoProvider(VideoGenerationProvider):
             fps=(24, 25, 30), max_frames=241, size_multiple=2, default_steps=1,
         )  # fmt: skip
 
-    def load(self, device: DeviceInfo) -> None:
+    def load(self, device: DeviceInfo, profile: PerformanceProfile) -> None:
         self._loaded = True
 
     def unload(self) -> None:

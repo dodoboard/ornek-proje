@@ -24,17 +24,17 @@ def test_repo_catalog_parses_every_kind(settings: Settings) -> None:
         assert catalog.default in catalog.models
     klein = config.kinds[ProviderKind.IMAGE].models["flux2_klein_4b"]
     assert klein.pipeline_class == "Flux2KleinPipeline"
-    assert klein.extra("distilled") is True
+    assert klein.option("distilled") is True
 
 
 def test_unimplemented_providers_are_reported_honestly(settings: Settings) -> None:
     infos = {i.key: i for i in ProviderRegistry(settings).describe_all()}
-    assert infos["flux2_klein_4b"].status is ProviderStatus.NOT_IMPLEMENTED
-    assert infos["flux2_klein_4b"].capabilities is None
+    assert infos["wan22_ti2v_5b"].status is ProviderStatus.NOT_IMPLEMENTED
+    assert infos["wan22_ti2v_5b"].capabilities is None
     assert infos["ltx2"].maturity is Maturity.EXPERIMENTAL
     assert "dev_fake_image" not in infos
     with pytest.raises(ProviderUnavailableError):
-        ProviderRegistry(settings).get(ProviderKind.IMAGE)
+        ProviderRegistry(settings).get(ProviderKind.VIDEO)
 
 
 def test_fake_providers_only_when_enabled(settings: Settings) -> None:

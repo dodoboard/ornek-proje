@@ -148,3 +148,4 @@ def delete_asset(session: Session, storage: StorageService, asset_id: str) -> No
     session.delete(asset)
     session.commit()
     storage.delete(path)
+    storage.thumbnail_path(asset_id).unlink(missing_ok=True)

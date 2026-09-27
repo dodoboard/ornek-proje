@@ -19,7 +19,7 @@ from pydantic import BaseModel
 if TYPE_CHECKING:
     from PIL.Image import Image
 
-    from app.core.config import Settings
+    from app.core.config import PerformanceProfile, Settings
     from app.providers.catalog import ModelSpec
     from app.providers.device import DeviceInfo
 
@@ -170,7 +170,7 @@ class Provider(ABC):
     def capabilities(self) -> Capabilities: ...
 
     @abstractmethod
-    def load(self, device: DeviceInfo) -> None: ...
+    def load(self, device: DeviceInfo, profile: PerformanceProfile) -> None: ...
 
     @abstractmethod
     def unload(self) -> None: ...

@@ -56,6 +56,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/assets/{asset_id}/thumbnail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Asset Thumbnail */
+        get: operations["get_asset_thumbnail_api_assets__asset_id__thumbnail_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/characters": {
         parameters: {
             query?: never;
@@ -173,6 +190,60 @@ export interface paths {
         put?: never;
         /** Revoke Consent */
         post: operations["revoke_consent_api_consents__consent_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/generate/image": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Image
+         * @description Validate against the selected model's capabilities, then queue an `image.generate` job.
+         */
+        post: operations["generate_image_api_generate_image_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/generations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Generations */
+        get: operations["list_generations_api_generations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/generations/{generation_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Generation */
+        get: operations["get_generation_api_generations__generation_id__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -896,6 +967,49 @@ export interface components {
          * @enum {string}
          */
         ConsentSubject: "face" | "voice";
+        /** GenerationRead */
+        GenerationRead: {
+            /** Assets */
+            assets?: components["schemas"]["AssetRead"][];
+            /** Character Id */
+            character_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Duration Ms */
+            duration_ms: number;
+            /** Id */
+            id: string;
+            /** Input Asset Ids */
+            input_asset_ids: string[];
+            /** Job Id */
+            job_id: string | null;
+            /** Kind */
+            kind: string;
+            /** Model Key */
+            model_key: string;
+            /** Model Source */
+            model_source: string | null;
+            /** Output Asset Ids */
+            output_asset_ids: string[];
+            /** Params */
+            params: {
+                [key: string]: unknown;
+            };
+            /** Project Id */
+            project_id: string | null;
+            /** Provider */
+            provider: string;
+            /** Seeds */
+            seeds: number[];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** GpuInfo */
         GpuInfo: {
             /** Driver Version */
@@ -946,6 +1060,45 @@ export interface components {
             status: "ok";
             /** Version */
             version: string;
+        };
+        /** ImageGenerateRequest */
+        ImageGenerateRequest: {
+            /** Character Id */
+            character_id?: string | null;
+            /** Guidance Scale */
+            guidance_scale?: number | null;
+            /**
+             * Height
+             * @default 1024
+             */
+            height?: number;
+            /** Model Key */
+            model_key?: string | null;
+            /**
+             * Num Images
+             * @default 1
+             */
+            num_images?: number;
+            /** Project Id */
+            project_id?: string | null;
+            /** Prompt */
+            prompt: string;
+            /** Reference Asset Ids */
+            reference_asset_ids?: string[];
+            /** Seed */
+            seed?: number | null;
+            /** Steps */
+            steps?: number | null;
+            /**
+             * Watermark
+             * @description Defaults to the 'AI watermark' setting.
+             */
+            watermark?: boolean | null;
+            /**
+             * Width
+             * @default 1024
+             */
+            width?: number;
         };
         /** JobRead */
         JobRead: {
@@ -1034,6 +1187,17 @@ export interface components {
         Page_ConsentRead_: {
             /** Items */
             items: components["schemas"]["ConsentRead"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[GenerationRead] */
+        Page_GenerationRead_: {
+            /** Items */
+            items: components["schemas"]["GenerationRead"][];
             /** Limit */
             limit: number;
             /** Offset */
@@ -1835,6 +1999,35 @@ export interface operations {
             };
         };
     };
+    get_asset_thumbnail_api_assets__asset_id__thumbnail_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_characters_api_characters_get: {
         parameters: {
             query?: {
@@ -2175,6 +2368,105 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ConsentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_image_api_generate_image_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImageGenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_generations_api_generations_get: {
+        parameters: {
+            query?: {
+                kind?: string | null;
+                project_id?: string | null;
+                character_id?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_GenerationRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_generation_api_generations__generation_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                generation_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GenerationRead"];
                 };
             };
             /** @description Validation Error */

@@ -2,8 +2,6 @@
 
 import { RecentList } from "@/components/dashboard/RecentList";
 import { ActiveJobs } from "@/components/jobs/ActiveJobs";
-import { Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
 import { api } from "@/lib/api/client";
 import { projectTypeLabel } from "@/lib/projects";
 
@@ -21,9 +19,18 @@ export function DashboardLists() {
         emptyText="Create a project to get started."
       />
       <ActiveJobs />
-      <Card title="Recent Generations">
-        <EmptyState title="No generations yet">Available from Phase 5.</EmptyState>
-      </Card>
+      <RecentList
+        title="Recent Generations"
+        href="/image-studio"
+        queryKey={["generations", RECENT]}
+        fetchPage={() => api.generations.list(RECENT)}
+        toItem={(g) => ({
+          id: g.id,
+          title: String(g.params?.prompt ?? g.kind),
+          subtitle: `${g.model_key} · ${g.output_asset_ids?.length ?? 0} img`,
+        })}
+        emptyText="Generate an image in Image Studio."
+      />
       <RecentList
         title="Influencers"
         href="/influencers"

@@ -29,7 +29,7 @@ class ModelSpec(BaseModel):
     license_claim: str | None = None
     note: str | None = None
 
-    def extra(self, key: str, default: Any = None) -> Any:
+    def option(self, key: str, default: Any = None) -> Any:
         return (self.model_extra or {}).get(key, default)
 
 

@@ -21,6 +21,10 @@ image:
       distilled: true
       verification: needs-user-machine
       license_claim: "Apache-2.0 (unverified)"
+      # Unverified defaults — confirm recommended steps and reference limits on the model card.
+      default_steps: 4
+      max_reference_images: 4
+      max_size: 2048
     flux2_klein_9b:
       provider: flux2_diffusers
       pipeline_class: Flux2KleinPipeline
@@ -29,6 +33,10 @@ image:
       distilled: true
       verification: needs-user-machine
       license_claim: "Non-commercial (unverified)"
+      # Unverified defaults — confirm recommended steps and reference limits on the model card.
+      default_steps: 4
+      max_reference_images: 4
+      max_size: 2048
     flux2_klein_base_9b:
       provider: flux2_diffusers
       pipeline_class: Flux2KleinPipeline
@@ -38,6 +46,10 @@ image:
       distilled: false
       verification: needs-user-machine
       license_claim: "Non-commercial (unverified)"
+      # Unverified defaults — confirm recommended steps and reference limits on the model card.
+      default_steps: 50
+      max_reference_images: 4
+      max_size: 2048
     flux2_dev:
       provider: flux2_diffusers
       pipeline_class: Flux2Pipeline
@@ -47,6 +59,10 @@ image:
       distilled: false
       verification: experimental
       license_claim: "FLUX.2 [dev] Non-Commercial License (unverified)"
+      # Unverified defaults — confirm recommended steps and reference limits on the model card.
+      default_steps: 50
+      max_reference_images: 4
+      max_size: 2048
       note: "32B transformer + 24B text encoder; not practical on 16 GB VRAM / 32 GB RAM without quantization."
   inpaint:
     flux2_klein_inpaint:
