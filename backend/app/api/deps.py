@@ -51,3 +51,14 @@ SessionDep = Annotated[Session, Depends(get_session)]
 StorageDep = Annotated[StorageService, Depends(get_storage)]
 PaginationDep = Annotated[Pagination, Depends(get_pagination)]
 SearchQuery = Annotated[str | None, Query(max_length=100)]
+
+
+def get_effective_settings(request: Request, session: SessionDep) -> Settings:
+    """Env settings with UI preferences (performance profile, FFmpeg paths, offline mode) applied."""
+    from app.services.preferences import effective_settings, load_preferences
+
+    base: Settings = request.app.state.settings
+    return effective_settings(base, load_preferences(session, base))
+
+
+EffectiveSettingsDep = Annotated[Settings, Depends(get_effective_settings)]

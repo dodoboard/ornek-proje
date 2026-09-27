@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, cast
 
-from sqlalchemy import CursorResult, select, update
+from sqlalchemy import CursorResult, Engine, select, update
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.errors import ConflictError, ErrorCode, NotFoundError
@@ -33,6 +33,12 @@ class ClaimedJob:
 class JobQueue:
     def __init__(self, session_factory: sessionmaker[Session]) -> None:
         self._sessions = session_factory
+
+    @property
+    def engine(self) -> Engine:
+        bind = self._sessions.kw["bind"]
+        assert isinstance(bind, Engine)
+        return bind
 
     # ------------------------------------------------------------------ producer side
 
@@ -212,10 +218,21 @@ class JobQueue:
 
     # ------------------------------------------------------------------ worker liveness
 
-    def register_worker(self, worker_id: str, hostname: str, pid: int) -> None:
+    def register_worker(
+        self, worker_id: str, hostname: str, pid: int, runtime: dict[str, Any] | None = None
+    ) -> None:
         now = utcnow()
         with self._sessions.begin() as session:
-            session.add(Worker(id=worker_id, hostname=hostname, pid=pid, started_at=now, heartbeat_at=now))
+            session.add(
+                Worker(
+                    id=worker_id,
+                    hostname=hostname,
+                    pid=pid,
+                    started_at=now,
+                    heartbeat_at=now,
+                    runtime=runtime,
+                )
+            )
 
     def worker_heartbeat(self, worker_id: str, current_job_id: str | None) -> None:
         with self._sessions.begin() as session:

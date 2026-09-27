@@ -251,6 +251,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Models
+         * @description Configured models per kind with live status (installed? downloaded? implemented?).
+         */
+        get: operations["list_models_api_models_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/products": {
         parameters: {
             query?: never;
@@ -428,6 +448,24 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Settings */
+        get: operations["get_settings_api_settings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Patch Settings */
+        patch: operations["patch_settings_api_settings_patch"];
         trace?: never;
     };
     "/api/system": {
@@ -956,11 +994,31 @@ export interface components {
          * @enum {string}
          */
         JobStatus: "queued" | "running" | "loading_model" | "generating_script" | "generating_storyboard" | "generating_image" | "processing_product" | "generating_video" | "generating_audio" | "lip_sync" | "creating_captions" | "encoding" | "completed" | "failed" | "cancelled";
+        /** KindModels */
+        KindModels: {
+            /** Default Key */
+            default_key: string | null;
+            kind: components["schemas"]["ProviderKind"];
+            /** Providers */
+            providers: components["schemas"]["ProviderInfo"][];
+        };
         /**
          * ListingType
          * @enum {string}
          */
         ListingType: "sale" | "rent";
+        /**
+         * Maturity
+         * @enum {string}
+         */
+        Maturity: "stable" | "experimental" | "dev_only";
+        /** ModelsResponse */
+        ModelsResponse: {
+            /** Fake Providers Enabled */
+            fake_providers_enabled: boolean;
+            /** Kinds */
+            kinds: components["schemas"]["KindModels"][];
+        };
         /** Page[CharacterSummary] */
         Page_CharacterSummary_: {
             /** Items */
@@ -1026,6 +1084,88 @@ export interface components {
             offset: number;
             /** Total */
             total: number;
+        };
+        /**
+         * PerformanceProfile
+         * @enum {string}
+         */
+        PerformanceProfile: "performance" | "balanced" | "low_vram";
+        /** PreferencesRead */
+        PreferencesRead: {
+            /**
+             * Ai Watermark
+             * @default false
+             */
+            ai_watermark?: boolean;
+            /**
+             * Default Aspect Ratio
+             * @default 9:16
+             * @enum {string}
+             */
+            default_aspect_ratio?: "9:16" | "16:9" | "1:1" | "4:5";
+            /**
+             * Default Language
+             * @default tr
+             */
+            default_language?: string;
+            /** Default Models */
+            default_models?: {
+                [key: string]: string;
+            };
+            /** Ffmpeg Path */
+            ffmpeg_path?: string | null;
+            /** Ffprobe Path */
+            ffprobe_path?: string | null;
+            /** Model Paths */
+            model_paths?: {
+                [key: string]: string;
+            };
+            /**
+             * Offline Mode
+             * @default false
+             */
+            offline_mode?: boolean;
+            /** @default balanced */
+            performance_profile?: components["schemas"]["PerformanceProfile"];
+            /**
+             * Restart Required Fields
+             * @default [
+             *       "offline_mode"
+             *     ]
+             */
+            restart_required_fields?: string[];
+            /**
+             * Telemetry Enabled
+             * @default false
+             */
+            telemetry_enabled?: boolean;
+        };
+        /** PreferencesUpdate */
+        PreferencesUpdate: {
+            /** Ai Watermark */
+            ai_watermark?: boolean | null;
+            /** Default Aspect Ratio */
+            default_aspect_ratio?: ("9:16" | "16:9" | "1:1" | "4:5") | null;
+            /** Default Language */
+            default_language?: string | null;
+            /** Default Models */
+            default_models?: {
+                [key: string]: string;
+            } | null;
+            /** Ffmpeg Path */
+            ffmpeg_path?: string | null;
+            /** Ffprobe Path */
+            ffprobe_path?: string | null;
+            /**
+             * Model Paths
+             * @description Model key → local path. Null removes the override.
+             */
+            model_paths?: {
+                [key: string]: string | null;
+            } | null;
+            /** Offline Mode */
+            offline_mode?: boolean | null;
+            performance_profile?: components["schemas"]["PerformanceProfile"] | null;
         };
         /** PrivacyStatus */
         PrivacyStatus: {
@@ -1454,6 +1594,44 @@ export interface components {
             /** Zoning */
             zoning?: string | null;
         };
+        /** ProviderInfo */
+        ProviderInfo: {
+            /** Capabilities */
+            capabilities: {
+                [key: string]: unknown;
+            } | null;
+            /** Detail */
+            detail: string | null;
+            /** Is Default */
+            is_default: boolean;
+            /** Is Local */
+            is_local: boolean;
+            /** Key */
+            key: string;
+            kind: components["schemas"]["ProviderKind"];
+            /** License Claim */
+            license_claim: string | null;
+            maturity: components["schemas"]["Maturity"];
+            /** Note */
+            note: string | null;
+            /** Provider */
+            provider: string;
+            /** Source */
+            source: string | null;
+            status: components["schemas"]["ProviderStatus"];
+            /** Verification */
+            verification: string;
+        };
+        /**
+         * ProviderKind
+         * @enum {string}
+         */
+        ProviderKind: "image" | "video" | "llm" | "tts" | "lipsync" | "asr" | "segmentation" | "upscale";
+        /**
+         * ProviderStatus
+         * @enum {string}
+         */
+        ProviderStatus: "available" | "model_missing" | "not_installed" | "not_implemented" | "disabled";
         /** StorageStatus */
         StorageStatus: {
             /** Data Dir */
@@ -1514,6 +1692,10 @@ export interface components {
             current_job_id?: string | null;
             /** Heartbeat At */
             heartbeat_at?: string | null;
+            /** Runtime */
+            runtime?: {
+                [key: string]: unknown;
+            } | null;
             /**
              * Status
              * @enum {string}
@@ -2155,6 +2337,26 @@ export interface operations {
             };
         };
     };
+    list_models_api_models_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelsResponse"];
+                };
+            };
+        };
+    };
     list_products_api_products_get: {
         parameters: {
             query?: {
@@ -2757,6 +2959,59 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_settings_api_settings_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferencesRead"];
+                };
+            };
+        };
+    };
+    patch_settings_api_settings_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreferencesUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreferencesRead"];
+                };
             };
             /** @description Validation Error */
             422: {

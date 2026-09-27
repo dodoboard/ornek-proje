@@ -3,7 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Request, status
 from fastapi.concurrency import run_in_threadpool
 
-from app.api.deps import SessionDep, SettingsDep
+from app.api.deps import EffectiveSettingsDep, SessionDep
 from app.schemas.job import JobRead
 from app.schemas.system import SystemResponse
 from app.services.jobs import worker_status
@@ -15,7 +15,7 @@ router = APIRouter(tags=["system"])
 
 
 @router.get("/system", response_model=SystemResponse)
-async def system(settings: SettingsDep, session: SessionDep) -> SystemResponse:
+async def system(settings: EffectiveSettingsDep, session: SessionDep) -> SystemResponse:
     # Subprocess probes (nvidia-smi, ffmpeg) are blocking; keep them off the event loop.
     info = await run_in_threadpool(collect_system_info, settings)
     info.worker = await run_in_threadpool(worker_status, session, settings)

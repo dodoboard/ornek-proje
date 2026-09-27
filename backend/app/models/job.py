@@ -51,3 +51,5 @@ class Worker(Base):
     heartbeat_at: Mapped[datetime] = mapped_column(UTCDateTime(), index=True)
     current_job_id: Mapped[str | None] = mapped_column(String(40))
     stopped_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    #: Torch/CUDA/GPU facts detected inside the worker (the API process never imports torch).
+    runtime: Mapped[dict[str, Any] | None] = mapped_column(JSON)

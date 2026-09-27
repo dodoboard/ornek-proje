@@ -1297,6 +1297,38 @@
         "title": "JobStatus",
         "type": "string"
       },
+      "KindModels": {
+        "properties": {
+          "default_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Key"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ProviderKind"
+          },
+          "providers": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderInfo"
+            },
+            "title": "Providers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kind",
+          "default_key",
+          "providers"
+        ],
+        "title": "KindModels",
+        "type": "object"
+      },
       "ListingType": {
         "enum": [
           "sale",
@@ -1304,6 +1336,36 @@
         ],
         "title": "ListingType",
         "type": "string"
+      },
+      "Maturity": {
+        "enum": [
+          "stable",
+          "experimental",
+          "dev_only"
+        ],
+        "title": "Maturity",
+        "type": "string"
+      },
+      "ModelsResponse": {
+        "properties": {
+          "fake_providers_enabled": {
+            "title": "Fake Providers Enabled",
+            "type": "boolean"
+          },
+          "kinds": {
+            "items": {
+              "$ref": "#/components/schemas/KindModels"
+            },
+            "title": "Kinds",
+            "type": "array"
+          }
+        },
+        "required": [
+          "fake_providers_enabled",
+          "kinds"
+        ],
+        "title": "ModelsResponse",
+        "type": "object"
       },
       "Page_CharacterSummary_": {
         "properties": {
@@ -1489,6 +1551,235 @@
           "offset"
         ],
         "title": "Page[PropertySummary]",
+        "type": "object"
+      },
+      "PerformanceProfile": {
+        "enum": [
+          "performance",
+          "balanced",
+          "low_vram"
+        ],
+        "title": "PerformanceProfile",
+        "type": "string"
+      },
+      "PreferencesRead": {
+        "properties": {
+          "ai_watermark": {
+            "default": false,
+            "title": "Ai Watermark",
+            "type": "boolean"
+          },
+          "default_aspect_ratio": {
+            "default": "9:16",
+            "enum": [
+              "9:16",
+              "16:9",
+              "1:1",
+              "4:5"
+            ],
+            "title": "Default Aspect Ratio",
+            "type": "string"
+          },
+          "default_language": {
+            "default": "tr",
+            "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$",
+            "title": "Default Language",
+            "type": "string"
+          },
+          "default_models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/ProviderKind"
+            },
+            "title": "Default Models",
+            "type": "object"
+          },
+          "ffmpeg_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ffmpeg Path"
+          },
+          "ffprobe_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ffprobe Path"
+          },
+          "model_paths": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Model Paths",
+            "type": "object"
+          },
+          "offline_mode": {
+            "default": false,
+            "title": "Offline Mode",
+            "type": "boolean"
+          },
+          "performance_profile": {
+            "$ref": "#/components/schemas/PerformanceProfile",
+            "default": "balanced"
+          },
+          "restart_required_fields": {
+            "default": [
+              "offline_mode"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "title": "Restart Required Fields",
+            "type": "array"
+          },
+          "telemetry_enabled": {
+            "default": false,
+            "title": "Telemetry Enabled",
+            "type": "boolean"
+          }
+        },
+        "title": "PreferencesRead",
+        "type": "object"
+      },
+      "PreferencesUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_watermark": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Watermark"
+          },
+          "default_aspect_ratio": {
+            "anyOf": [
+              {
+                "enum": [
+                  "9:16",
+                  "16:9",
+                  "1:1",
+                  "4:5"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Aspect Ratio"
+          },
+          "default_language": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Language"
+          },
+          "default_models": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "propertyNames": {
+                  "$ref": "#/components/schemas/ProviderKind"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Models"
+          },
+          "ffmpeg_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ffmpeg Path"
+          },
+          "ffprobe_path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ffprobe Path"
+          },
+          "model_paths": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Model key \u2192 local path. Null removes the override.",
+            "title": "Model Paths"
+          },
+          "offline_mode": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offline Mode"
+          },
+          "performance_profile": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PerformanceProfile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "PreferencesUpdate",
         "type": "object"
       },
       "PrivacyStatus": {
@@ -3201,6 +3492,137 @@
         "title": "PropertyUpdate",
         "type": "object"
       },
+      "ProviderInfo": {
+        "properties": {
+          "capabilities": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capabilities"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "is_default": {
+            "title": "Is Default",
+            "type": "boolean"
+          },
+          "is_local": {
+            "title": "Is Local",
+            "type": "boolean"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ProviderKind"
+          },
+          "license_claim": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License Claim"
+          },
+          "maturity": {
+            "$ref": "#/components/schemas/Maturity"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ProviderStatus"
+          },
+          "verification": {
+            "title": "Verification",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "key",
+          "provider",
+          "status",
+          "detail",
+          "maturity",
+          "verification",
+          "license_claim",
+          "note",
+          "source",
+          "is_default",
+          "is_local",
+          "capabilities"
+        ],
+        "title": "ProviderInfo",
+        "type": "object"
+      },
+      "ProviderKind": {
+        "enum": [
+          "image",
+          "video",
+          "llm",
+          "tts",
+          "lipsync",
+          "asr",
+          "segmentation",
+          "upscale"
+        ],
+        "title": "ProviderKind",
+        "type": "string"
+      },
+      "ProviderStatus": {
+        "enum": [
+          "available",
+          "model_missing",
+          "not_installed",
+          "not_implemented",
+          "disabled"
+        ],
+        "title": "ProviderStatus",
+        "type": "string"
+      },
       "StorageStatus": {
         "properties": {
           "data_dir": {
@@ -3367,6 +3789,18 @@
               }
             ],
             "title": "Heartbeat At"
+          },
+          "runtime": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime"
           },
           "status": {
             "enum": [
@@ -4332,6 +4766,28 @@
         ]
       }
     },
+    "/api/models": {
+      "get": {
+        "description": "Configured models per kind with live status (installed? downloaded? implemented?).",
+        "operationId": "list_models_api_models_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Models",
+        "tags": [
+          "models"
+        ]
+      }
+    },
     "/api/products": {
       "get": {
         "operationId": "list_products_api_products_get",
@@ -5247,6 +5703,66 @@
         "summary": "Detach Asset",
         "tags": [
           "properties"
+        ]
+      }
+    },
+    "/api/settings": {
+      "get": {
+        "operationId": "get_settings_api_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Settings",
+        "tags": [
+          "settings"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_settings_api_settings_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferencesUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreferencesRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Settings",
+        "tags": [
+          "settings"
         ]
       }
     },

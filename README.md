@@ -2,7 +2,7 @@
 
 Local-first AI content studio: consistent AI influencers, product ads, real-estate/land videos. FLUX.2 for images, a separate local video model for motion, FFmpeg for final composition. No paid cloud API is required at runtime.
 
-> Status: **Phase 3 — job system.** Database/API foundation plus a background worker with a SQLite-backed queue, live progress (SSE), cancellation and crash recovery. No generation features yet.
+> Status: **Phase 4 — model/provider architecture.** Provider interfaces, model registry with live status, central ModelManager (VRAM/precision/offload), Models and Settings pages. **No real AI model is integrated yet** — FLUX.2 arrives in Phase 5. Only clearly labelled dev placeholders can run.
 > See `docs/PHASE0_VALIDATION.md` for verified integrations and open items, and `MODEL_LICENSES.md` before downloading any model.
 
 ## Layout
@@ -82,7 +82,9 @@ Interactive docs: http://127.0.0.1:8000/docs. All errors use `{"error": {"code",
 | Projects | `GET/POST /api/projects`, `GET/PATCH/DELETE /api/projects/{id}` |
 | Consents | `GET/POST /api/consents`, `GET /api/consents/{id}`, `POST /api/consents/{id}/revoke` |
 | Jobs | `GET /api/jobs` (`?active=`, `?status=`, `?type=`, `?project_id=`), `GET /api/jobs/{id}`, `DELETE /api/jobs/{id}` (cancel), `GET /api/jobs/{id}/events` (SSE) |
-| System | `GET /api/health`, `GET /api/system` (incl. worker status), `POST /api/system/diagnostics` |
+| System | `GET /api/health`, `GET /api/system` (incl. worker status and runtime), `POST /api/system/diagnostics` |
+| Models | `GET /api/models` |
+| Settings | `GET /api/settings`, `PATCH /api/settings` (performance profile, default models, model paths, FFmpeg paths, offline mode, watermark, defaults) |
 
 Data rules enforced server-side:
 
@@ -102,6 +104,23 @@ Generation work never runs inside an HTTP request. The API writes a row to the `
 - **Self-test:** "Run diagnostics" on the dashboard (or `POST /api/system/diagnostics`) runs a real job: storage write, disk space, an FFmpeg H.264 test encode with live progress, GPU driver query and ML package check.
 
 Relevant settings (`.env`): `WORKER_POLL_INTERVAL_S`, `WORKER_HEARTBEAT_INTERVAL_S`, `WORKER_STALE_AFTER_S`, `JOB_PROGRESS_MIN_INTERVAL_S`, `SSE_POLL_INTERVAL_S`.
+
+## Models & providers (Phase 4)
+
+- **Catalog:** `backend/config/models.yaml` is the only place model repo IDs live. Each entry names a provider implementation, a repo ID and/or local path, a `verification` state and an unverified `license_claim`.
+- **Status** (Models page / `GET /api/models`), computed without importing torch:
+  | Status | Meaning |
+  |---|---|
+  | Ready | integration exists, packages installed, weights found |
+  | Not downloaded | weights not in the Hugging Face cache or the local path does not exist |
+  | Packages missing | a required Python package is not installed |
+  | Not implemented | the integration has not been written yet — it cannot be selected |
+- **Downloading:** `cd backend && python scripts/download_models.py --list`, then e.g. `python scripts/download_models.py image:flux2_klein_4b`. Gated repos need `HF_TOKEN` in your environment. Read each license first (`MODEL_LICENSES.md`).
+- **Local paths:** set per model on the Models page (or `FLUX_MODEL_PATH`, `VIDEO_MODEL_PATH`, … in `.env` for the catalog default). Relative paths resolve under `MODELS_DIR`.
+- **ModelManager** (worker only): one heavy model on the GPU at a time; switching models unloads the previous one and runs `gc.collect()` + `torch.cuda.empty_cache()`. CUDA out-of-memory is reported as `VRAM_OOM` instead of crashing; load failures as `MODEL_LOAD_FAILED`.
+- **Performance profiles** (Settings page): *Performance* keeps the pipeline on the GPU; *Balanced* uses model CPU offload; *Low VRAM* uses sequential offload, VAE tiling, attention slicing and unloads after every job. Only optimisations the pipeline object actually provides are called.
+- **Device detection** runs inside the worker and is shown on the Settings page (PyTorch/CUDA version, compute capability, whether the installed build has kernels for your GPU — e.g. `sm_120` for RTX 50-series).
+- **Dev placeholders:** `ENABLE_FAKE_PROVIDERS=true` adds `dev_fake_image` / `dev_fake_video`. They draw labelled gradients ("DEV PLACEHOLDER - NOT AI OUTPUT") and are refused in `APP_ENV=production`. Never mistake them for model output.
 
 ## Checks
 

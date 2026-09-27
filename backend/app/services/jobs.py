@@ -56,4 +56,5 @@ def worker_status(session: Session, settings: Settings) -> WorkerStatus:
         worker_id=worker.id,
         heartbeat_at=worker.heartbeat_at,
         current_job_id=worker.current_job_id if online else None,
+        runtime=worker.runtime,
     )

@@ -14,6 +14,14 @@ export type PropertySummary = Schemas["PropertySummary"];
 export type JobRead = Schemas["JobRead"];
 export type JobStatus = JobRead["status"];
 export type WorkerStatus = Schemas["WorkerStatus"];
+export type ModelsResponse = Schemas["ModelsResponse"];
+export type KindModels = Schemas["KindModels"];
+export type ProviderInfo = Schemas["ProviderInfo"];
+export type ProviderKind = Schemas["ProviderKind"];
+export type ProviderStatus = Schemas["ProviderStatus"];
+export type Preferences = Schemas["PreferencesRead"];
+export type PreferencesUpdate = Schemas["PreferencesUpdate"];
+export type PerformanceProfile = Schemas["PerformanceProfile"];
 
 export interface Page<T> {
   items: T[];
@@ -94,6 +102,14 @@ export const api = {
   health: () => apiFetch<HealthResponse>("/api/health"),
   system: () => apiFetch<SystemResponse>("/api/system"),
   runDiagnostics: () => apiFetch<JobRead>("/api/system/diagnostics", { method: "POST" }),
+
+  models: {
+    list: () => apiFetch<ModelsResponse>("/api/models"),
+  },
+  settings: {
+    get: () => apiFetch<Preferences>("/api/settings"),
+    update: (patch: PreferencesUpdate) => apiFetch<Preferences>("/api/settings", jsonInit("PATCH", patch)),
+  },
 
   jobs: {
     list: (params: ListParams & { active?: boolean; type?: string } = {}) =>

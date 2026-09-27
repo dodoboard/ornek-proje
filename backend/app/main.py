@@ -18,10 +18,14 @@ from app.api.routers import (
     consents,
     health,
     jobs,
+    models,
     products,
     projects,
     properties,
     system,
+)
+from app.api.routers import (
+    settings as settings_router,
 )
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging
@@ -87,6 +91,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         properties.router,
         projects.router,
         jobs.router,
+        models.router,
+        settings_router.router,
     ):
         app.include_router(router, prefix=API_PREFIX)
     return app

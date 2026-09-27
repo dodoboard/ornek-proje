@@ -13,6 +13,10 @@ from app.core.config import Settings
 from app.core.errors import AppError, ErrorCode
 from app.core.ids import IdPrefix, new_id
 from app.core.logging import job_id_var
+from app.db.session import create_session_factory
+from app.providers.device import DeviceInfo, detect_device
+from app.providers.model_manager import ModelManager
+from app.services.preferences import Preferences, build_registry, effective_settings, load_preferences
 from app.workers.context import JobCancelled, JobContext
 from app.workers.queue import ClaimedJob, JobQueue
 from app.workers.registry import HandlerRegistry
@@ -23,7 +27,14 @@ GENERIC_FAILURE = "The job failed. See the worker log for details."
 
 
 class Worker:
-    def __init__(self, settings: Settings, queue: JobQueue, registry: HandlerRegistry) -> None:
+    def __init__(
+        self,
+        settings: Settings,
+        queue: JobQueue,
+        registry: HandlerRegistry,
+        *,
+        device: DeviceInfo | None = None,
+    ) -> None:
         self.settings = settings
         self.queue = queue
         self.registry = registry
@@ -31,11 +42,33 @@ class Worker:
         self.stop_event = threading.Event()
         self._current_job: str | None = None
         self._heartbeat_thread: threading.Thread | None = None
+        self._device = device
+        self._models: ModelManager | None = None
+        self._models_prefs: Preferences | None = None
+
+    @property
+    def device(self) -> DeviceInfo:
+        if self._device is None:
+            self._device = detect_device(self.settings.device)
+        return self._device
+
+    def _model_manager(self, prefs: Preferences) -> ModelManager:
+        """Rebuild the provider registry when preferences change (unloading current models first)."""
+        if self._models is None or prefs != self._models_prefs:
+            if self._models is not None:
+                self._models.unload_all()
+            registry = build_registry(self.settings, prefs)
+            self._models = ModelManager(registry, self.device, prefs.performance_profile)
+            self._models_prefs = prefs
+        return self._models
 
     # ------------------------------------------------------------------ lifecycle
 
     def start(self) -> None:
-        self.queue.register_worker(self.worker_id, socket.gethostname(), os.getpid())
+        runtime = self.device.to_dict()
+        self.queue.register_worker(self.worker_id, socket.gethostname(), os.getpid(), runtime)
+        for note in self.device.notes:
+            logger.warning("device_note", extra={"note": note})
         recovered = self.queue.recover_stale(timedelta(seconds=self.settings.worker_stale_after_s))
         if recovered:
             logger.warning("recovered_stale_jobs", extra={"job_ids": recovered})
@@ -48,6 +81,8 @@ class Worker:
 
     def shutdown(self) -> None:
         self.stop_event.set()
+        if self._models is not None:
+            self._models.unload_all()
         if self._heartbeat_thread is not None:
             self._heartbeat_thread.join(timeout=self.settings.worker_heartbeat_interval_s + 1)
         self.queue.stop_worker(self.worker_id)
@@ -82,9 +117,14 @@ class Worker:
         self._run(claimed)
         return True
 
+    def _load_preferences(self) -> Preferences:
+        with create_session_factory(self.queue.engine)() as session:
+            return load_preferences(session, self.settings)
+
     def _run(self, job: ClaimedJob) -> None:
         token = job_id_var.set(job.id)
         self._current_job = job.id
+        prefs = self._load_preferences()
         ctx = JobContext(
             job_id=job.id,
             job_type=job.type,
@@ -94,6 +134,8 @@ class Worker:
             temp_root=self.settings.data_path("temp", "jobs"),
             stop_event=self.stop_event,
             min_report_interval_s=self.settings.job_progress_min_interval_s,
+            settings=effective_settings(self.settings, prefs),
+            models=self._model_manager(prefs),
         )
         logger.info("job_started", extra={"type": job.type})
         try:

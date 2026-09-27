@@ -30,3 +30,4 @@ class WorkerStatus(BaseModel):
     worker_id: str | None = None
     heartbeat_at: datetime | None = None
     current_job_id: str | None = None
+    runtime: dict[str, Any] | None = None

@@ -6,7 +6,7 @@ from fastapi import APIRouter, File, Request, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 
-from app.api.deps import SessionDep, SettingsDep, StorageDep
+from app.api.deps import EffectiveSettingsDep, SessionDep, StorageDep
 from app.core.errors import FileTooLargeError, NotFoundError
 from app.schemas.asset import AssetRead
 from app.services import assets as service
@@ -21,7 +21,7 @@ async def upload_asset(
     request: Request,
     file: Annotated[UploadFile, File(description="JPEG, PNG, WEBP, MP4, MOV, WAV, MP3 or M4A")],
     session: SessionDep,
-    settings: SettingsDep,
+    settings: EffectiveSettingsDep,
     storage: StorageDep,
 ) -> AssetRead:
     declared = request.headers.get("content-length")

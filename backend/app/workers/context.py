@@ -9,11 +9,16 @@ import threading
 import time
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+from app.core.config import Settings
 from app.core.errors import AppError, ErrorCode
 from app.models.enums import JobStatus
+from app.providers.base import GenerationContext
 from app.workers.queue import JobQueue
+
+if TYPE_CHECKING:
+    from app.providers.model_manager import ModelManager
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +49,11 @@ class JobContext:
         stop_event: threading.Event,
         min_report_interval_s: float = 0.5,
         clock: Callable[[], float] = time.monotonic,
+        settings: Settings | None = None,
+        models: ModelManager | None = None,
     ) -> None:
+        self.settings = settings
+        self._models = models
         self.job_id = job_id
         self.job_type = job_type
         self.payload = payload
@@ -94,6 +103,20 @@ class JobContext:
             self.report(start + (end - start) * clamped)
 
         return _update
+
+    def generation_context(self, start: float, end: float) -> GenerationContext:
+        """Context for a provider call whose progress maps onto [start, end] of the job."""
+        return GenerationContext(
+            temp_dir=self.temp_dir,
+            progress=self.stage_progress(start, end),
+            run_subprocess=self.run_subprocess,
+        )
+
+    @property
+    def models(self) -> ModelManager:
+        if self._models is None:
+            raise RuntimeError("This job context has no model manager.")
+        return self._models
 
     # ------------------------------------------------------------------ cancellation
 
