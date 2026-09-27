@@ -21,12 +21,14 @@ def list_generations(
     ] = None,
     project_id: Annotated[str | None, Query(max_length=40)] = None,
     character_id: Annotated[str | None, Query(max_length=40)] = None,
+    product_id: Annotated[str | None, Query(max_length=40)] = None,
 ) -> Page[GenerationRead]:
     items, total = service.list_generations(
         session,
         kind=kind,
         project_id=project_id,
         character_id=character_id,
+        product_id=product_id,
         limit=page.limit,
         offset=page.offset,
     )

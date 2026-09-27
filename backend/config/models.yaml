@@ -142,19 +142,41 @@ asr:
       license_claim: "faster-whisper MIT; Whisper weights MIT (unverified)"
 
 segmentation:
-  default: birefnet
+  default: birefnet_general
   models:
-    birefnet:
+    # rembg ONNX sessions (rembg 2.0.85). Weights come from the rembg GitHub releases, not Hugging Face;
+    # download with scripts/download_models.py (stored under MODELS_DIR/rembg unless REMBG_HOME/U2NET_HOME is set).
+    birefnet_general:
+      provider: rembg_onnx
+      session: birefnet-general
+      verification: verified
+      license_claim: "rembg MIT; BiRefNet weights MIT (unverified)"
+      note: "Best quality for products; ~1 GB ONNX, 1024x1024 inference."
+    birefnet_general_lite:
+      provider: rembg_onnx
+      session: birefnet-general-lite
+      verification: verified
+      license_claim: "rembg MIT; BiRefNet weights MIT (unverified)"
+      note: "Faster, smaller BiRefNet (Swin-T backbone)."
+    isnet_general_use:
+      provider: rembg_onnx
+      session: isnet-general-use
+      verification: verified
+      license_claim: "rembg MIT; DIS/ISNet weights Apache-2.0 (unverified)"
+    color_key:
+      provider: color_key
+      tolerance: 24
+      verification: verified
+      license_claim: "Project code (no model weights)"
+      note: "Classical, no AI: removes a plain uniform background connected to the image border."
+    birefnet_transformers:
       provider: birefnet
       repo_id: ZhengPeng7/BiRefNet
       # trust_remote_code requires a pinned commit; set after reviewing the repo code.
       revision: null
       verification: needs-user-machine
       license_claim: "MIT (unverified)"
-    rembg:
-      provider: rembg
-      verification: verified
-      license_claim: "rembg MIT; model weights: per model"
+      note: "Not implemented: needs trust_remote_code; the rembg ONNX export above covers BiRefNet."
 
 upscale:
   default: realesrgan_x4

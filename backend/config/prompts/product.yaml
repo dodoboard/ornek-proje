@@ -1,0 +1,10 @@
+# Product scene templates. The product itself is NEVER generated: its original pixels are composited
+# afterwards, so the background prompt asks for empty space where it will stand. Brand names are not
+# put into prompts (the model would invent a logo). Placeholders: {scene}, {position}, {house_style}.
+background: >-
+  {scene}. Photorealistic product photography backdrop, empty uncluttered surface {position} where a
+  product will be placed later, nothing standing there, natural perspective, sharp focus. {house_style}
+harmonize: >-
+  A product standing on the surface, {scene}. Natural contact shadow, soft light wrapping around the
+  product edges, seamless realistic blend with the background.
+house_style: ""

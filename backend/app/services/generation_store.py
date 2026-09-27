@@ -33,7 +33,10 @@ class ImageGenerationRecord:
     watermark: bool
     project_id: str | None = None
     character_id: str | None = None
+    product_id: str | None = None
     purpose: str | None = None
+    #: False when no AI model produced any pixel (e.g. a product composited onto a user photo).
+    ai_generated: bool = True
     extra_disclosure: dict[str, Any] = field(default_factory=dict)
 
 
@@ -54,7 +57,7 @@ def save_image_generation(
         try:
             for image, seed in zip(images, record.seeds, strict=True):
                 disclosure = {
-                    "generated_with_ai": not record.placeholder,
+                    "generated_with_ai": record.ai_generated and not record.placeholder,
                     "dev_placeholder": record.placeholder,
                     "model": record.model_key,
                     "provider": record.provider,
@@ -63,11 +66,19 @@ def save_image_generation(
                     "generation_id": generation_id,
                     "project_id": record.project_id,
                     "character_id": record.character_id,
+                    **({"product_id": record.product_id} if record.product_id else {}),
                     "source_asset_ids": record.input_asset_ids,
                     **record.extra_disclosure,
                 }
                 stored.append(
-                    store_generated_image(session, storage, image, disclosure, watermark=record.watermark)
+                    store_generated_image(
+                        session,
+                        storage,
+                        image,
+                        disclosure,
+                        watermark=record.watermark,
+                        ai_generated=record.ai_generated,
+                    )
                 )
             session.add(
                 Generation(
@@ -76,10 +87,11 @@ def save_image_generation(
                     job_id=record.job_id,
                     project_id=record.project_id,
                     character_id=record.character_id,
+                    product_id=record.product_id,
                     provider=record.provider,
                     model_key=record.model_key,
                     model_source=record.model_source,
-                    params={**record.params, "watermark": record.watermark, "purpose": record.purpose},
+                    params={"watermark": record.watermark, "purpose": record.purpose, **record.params},
                     seeds=record.seeds,
                     input_asset_ids=record.input_asset_ids,
                     output_asset_ids=[a.id for a in stored],

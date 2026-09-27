@@ -1,0 +1,5 @@
+# Product cutouts (Phase 8). CPU build of onnxruntime; for CUDA replace it with onnxruntime-gpu==1.30.0
+# (needs matching CUDA/cuDNN runtime libraries — see README "Product Studio").
+-r base.txt
+rembg==2.0.85
+onnxruntime==1.30.0

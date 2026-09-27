@@ -108,6 +108,7 @@ class GenerationRead(TimestampedRead):
     job_id: str | None
     project_id: str | None
     character_id: str | None
+    product_id: str | None = None
     provider: str
     model_key: str
     model_source: str | None

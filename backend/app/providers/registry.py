@@ -37,9 +37,13 @@ def register_provider(name: str, cls: type[Provider]) -> None:
 def _register_builtin() -> None:
     from app.providers.image.fake import FakeImageProvider
     from app.providers.image.flux2_diffusers import Flux2DiffusersProvider
+    from app.providers.segmentation.color_key import ColorKeySegmentationProvider
+    from app.providers.segmentation.rembg_onnx import RembgSegmentationProvider
     from app.providers.video.fake import FakeVideoProvider
 
     IMPLEMENTED.setdefault("flux2_diffusers", Flux2DiffusersProvider)
+    IMPLEMENTED.setdefault("rembg_onnx", RembgSegmentationProvider)
+    IMPLEMENTED.setdefault("color_key", ColorKeySegmentationProvider)
     IMPLEMENTED.setdefault("dev_fake_image", FakeImageProvider)
     IMPLEMENTED.setdefault("dev_fake_video", FakeVideoProvider)
 

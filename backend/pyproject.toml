@@ -31,7 +31,7 @@ disable_error_code = ["type-abstract"]
 
 [[tool.mypy.overrides]]
 # Optional heavy ML dependencies are imported lazily inside providers.
-module = ["torch", "torch.*", "diffusers", "diffusers.*", "transformers", "transformers.*", "accelerate", "accelerate.*"]
+module = ["torch", "torch.*", "diffusers", "diffusers.*", "transformers", "transformers.*", "accelerate", "accelerate.*", "rembg", "rembg.*", "onnxruntime"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

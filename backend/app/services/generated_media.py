@@ -22,19 +22,44 @@ WATERMARK_TEXT = "AI generated"
 DISCLOSURE_PNG_KEY = "ai_disclosure"
 
 
-def apply_watermark(image: Image.Image, text: str = WATERMARK_TEXT) -> Image.Image:
-    """Small, legible label in the bottom-right corner (does not cover the subject)."""
+def _label_box(
+    size: tuple[int, int], text: str, corner: str
+) -> tuple[
+    ImageFont.FreeTypeFont | ImageFont.ImageFont, tuple[int, int, int, int], tuple[int, int, int, int], int
+]:
+    width, height = size
+    font_size = max(12, width // 40)
+    font = ImageFont.load_default(size=font_size)
+    left, top, right, bottom = (
+        round(v) for v in ImageDraw.Draw(Image.new("L", (1, 1))).textbbox((0, 0), text, font=font)
+    )
+    pad = font_size // 2
+    w, h = right - left + 2 * pad, bottom - top + 2 * pad
+    x = width - w - pad if corner.endswith("right") else pad
+    y = height - h - pad if corner.startswith("bottom") else pad
+    return font, (x, y, x + w, y + h), (left, top, right, bottom), pad
+
+
+def _overlaps(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> bool:
+    return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+
+def apply_watermark(
+    image: Image.Image, text: str = WATERMARK_TEXT, avoid: tuple[int, int, int, int] | None = None
+) -> Image.Image:
+    """Small, legible label in a corner (bottom-right by default); `avoid` keeps it off e.g. a product."""
     base = image.convert("RGBA")
+    corners = ("bottom-right", "bottom-left", "top-right", "top-left")
+    choice = corners[0]
+    if avoid is not None:
+        choice = next(
+            (c for c in corners if not _overlaps(_label_box(base.size, text, c)[1], avoid)), corners[0]
+        )
+    font, (x0, y0, x1, y1), (left, top, _, _), pad = _label_box(base.size, text, choice)
     overlay = Image.new("RGBA", base.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
-    size = max(12, base.width // 40)
-    font = ImageFont.load_default(size=size)
-    left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
-    pad = size // 2
-    w, h = right - left + 2 * pad, bottom - top + 2 * pad
-    x, y = base.width - w - pad, base.height - h - pad
-    draw.rounded_rectangle((x, y, x + w, y + h), radius=pad, fill=(0, 0, 0, 140))
-    draw.text((x + pad - left, y + pad - top), text, font=font, fill=(255, 255, 255, 230))
+    draw.rounded_rectangle((x0, y0, x1, y1), radius=pad, fill=(0, 0, 0, 140))
+    draw.text((x0 + pad - left, y0 + pad - top), text, font=font, fill=(255, 255, 255, 230))
     return Image.alpha_composite(base, overlay).convert("RGB")
 
 
@@ -51,11 +76,12 @@ def store_generated_image(
     disclosure: dict[str, Any],
     *,
     watermark: bool,
+    ai_generated: bool = True,
 ) -> Asset:
     """Write a PNG (with disclosure tEXt chunk) + thumbnail and add an Asset row (caller commits)."""
     asset_id = new_id(IdPrefix.ASSET)
     final = apply_watermark(image) if watermark else image.convert("RGB")
-    metadata = {**disclosure, "watermark": watermark}
+    metadata = {"watermark": watermark, **disclosure}
 
     info = PngInfo()
     info.add_text(DISCLOSURE_PNG_KEY, json.dumps(metadata, ensure_ascii=False, sort_keys=True))
@@ -78,7 +104,35 @@ def store_generated_image(
         height=final.height,
         duration_s=None,
         original_filename=None,
-        ai_generated=True,
+        ai_generated=ai_generated,
+        metadata_json=metadata,
+    )
+    session.add(asset)
+    return asset
+
+
+def store_derived_image(
+    session: Session, storage: StorageService, image: Image.Image, metadata: dict[str, Any]
+) -> Asset:
+    """Lossless PNG (alpha kept) derived from existing pixels, e.g. a product cutout or mask."""
+    asset_id = new_id(IdPrefix.ASSET)
+    path = storage.output_path(asset_id, "derived", ".png")
+    image.save(path, format="PNG")
+    write_thumbnail(image, storage.thumbnail_path(asset_id))
+    data = path.read_bytes()
+    asset = Asset(
+        id=asset_id,
+        kind=AssetKind.IMAGE,
+        source=AssetSource.DERIVED,
+        path=storage.relative(path),
+        mime="image/png",
+        size_bytes=len(data),
+        checksum_sha256=hashlib.sha256(data).hexdigest(),
+        width=image.width,
+        height=image.height,
+        duration_s=None,
+        original_filename=None,
+        ai_generated=False,
         metadata_json=metadata,
     )
     session.add(asset)

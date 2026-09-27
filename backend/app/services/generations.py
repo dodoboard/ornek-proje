@@ -29,6 +29,7 @@ def list_generations(
     kind: str | None,
     project_id: str | None,
     character_id: str | None,
+    product_id: str | None = None,
     limit: int,
     offset: int,
 ) -> tuple[list[Generation], int]:
@@ -40,6 +41,8 @@ def list_generations(
         stmt = stmt.where(Generation.project_id == project_id)
     if character_id:
         stmt = stmt.where(Generation.character_id == character_id)
+    if product_id:
+        stmt = stmt.where(Generation.product_id == product_id)
     return paginate(session, stmt, limit, offset)
 
 

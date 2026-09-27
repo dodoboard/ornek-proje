@@ -23,5 +23,7 @@ def apply_process_env(settings: Settings) -> None:
     if settings.offline_mode:
         for key in _OFFLINE_ENV:
             os.environ[key] = "1"
+    # rembg (segmentation) keeps its ONNX weights under MODELS_DIR/rembg (U2NET_HOME still wins in rembg).
+    os.environ["REMBG_HOME"] = str(settings.models_dir / "rembg")
     if settings.hf_home is not None:
         os.environ["HF_HOME"] = str(settings.hf_home)

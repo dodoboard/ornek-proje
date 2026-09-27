@@ -20,6 +20,7 @@ class Generation(TimestampMixin, Base):
     character_id: Mapped[str | None] = mapped_column(
         ForeignKey("characters.id", ondelete="SET NULL"), index=True
     )
+    product_id: Mapped[str | None] = mapped_column(ForeignKey("products.id", ondelete="SET NULL"), index=True)
     provider: Mapped[str] = mapped_column(String(60))
     model_key: Mapped[str] = mapped_column(String(80))
     model_source: Mapped[str | None] = mapped_column(String(500))
