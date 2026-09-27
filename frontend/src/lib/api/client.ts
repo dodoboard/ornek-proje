@@ -25,6 +25,17 @@ export type PerformanceProfile = Schemas["PerformanceProfile"];
 export type AssetRead = Schemas["AssetRead"];
 export type ImageGenerateRequest = Schemas["ImageGenerateRequest"];
 export type GenerationRead = Schemas["GenerationRead"];
+export type CharacterRead = Schemas["CharacterRead"];
+export type CharacterCreate = Schemas["CharacterCreate"];
+export type CharacterUpdate = Schemas["CharacterUpdate"];
+export type CharacterBible = Schemas["CharacterBibleRead"];
+export type CharacterBibleUpdate = Schemas["CharacterBibleUpdate"];
+export type CharacterGenerateRequest = Schemas["CharacterGenerateRequest"];
+export type CharacterPurpose = CharacterGenerateRequest["purpose"];
+export type PromptPreview = Schemas["PromptPreview"];
+export type ConsentCreate = Schemas["ConsentCreate"];
+export type ConsentRead = Schemas["ConsentRead"];
+export type ViewRole = "canonical" | "front" | "three_quarter" | "full_body";
 
 export interface Page<T> {
   items: T[];
@@ -146,8 +157,37 @@ export const api = {
     create: (payload: ProjectCreate) => apiFetch<ProjectRead>("/api/projects", jsonInit("POST", payload)),
     remove: (id: string) => apiFetch<void>(`/api/projects/${encodeURIComponent(id)}`, { method: "DELETE" }),
   },
+  consents: {
+    create: (body: ConsentCreate) => apiFetch<ConsentRead>("/api/consents", jsonInit("POST", body)),
+  },
   characters: {
     list: (params: ListParams = {}) => apiFetch<Page<CharacterSummary>>(`/api/characters${query({ ...params })}`),
+    get: (id: string) => apiFetch<CharacterRead>(`/api/characters/${encodeURIComponent(id)}`),
+    create: (body: CharacterCreate) => apiFetch<CharacterRead>("/api/characters", jsonInit("POST", body)),
+    update: (id: string, body: CharacterUpdate) =>
+      apiFetch<CharacterRead>(`/api/characters/${encodeURIComponent(id)}`, jsonInit("PATCH", body)),
+    remove: (id: string) => apiFetch<void>(`/api/characters/${encodeURIComponent(id)}`, { method: "DELETE" }),
+    attachAsset: (id: string, assetId: string, role: string) =>
+      apiFetch<CharacterRead>(
+        `/api/characters/${encodeURIComponent(id)}/assets`,
+        jsonInit("POST", { asset_id: assetId, role }),
+      ),
+    detachAsset: (id: string, assetId: string) =>
+      apiFetch<void>(`/api/characters/${encodeURIComponent(id)}/assets/${encodeURIComponent(assetId)}`, {
+        method: "DELETE",
+      }),
+    bible: (id: string) => apiFetch<CharacterBible>(`/api/characters/${encodeURIComponent(id)}/bible`),
+    updateBible: (id: string, body: CharacterBibleUpdate) =>
+      apiFetch<CharacterBible>(`/api/characters/${encodeURIComponent(id)}/bible`, jsonInit("PATCH", body)),
+    generate: (id: string, body: CharacterGenerateRequest) =>
+      apiFetch<JobRead>(`/api/characters/${encodeURIComponent(id)}/generate`, jsonInit("POST", body)),
+    previewPrompt: (id: string, body: CharacterGenerateRequest) =>
+      apiFetch<PromptPreview>(`/api/characters/${encodeURIComponent(id)}/prompt-preview`, jsonInit("POST", body)),
+    setView: (id: string, role: ViewRole, assetId: string) =>
+      apiFetch<CharacterRead>(
+        `/api/characters/${encodeURIComponent(id)}/views/${role}`,
+        jsonInit("PUT", { asset_id: assetId }),
+      ),
   },
   products: {
     list: (params: ListParams = {}) => apiFetch<Page<ProductSummary>>(`/api/products${query({ ...params })}`),

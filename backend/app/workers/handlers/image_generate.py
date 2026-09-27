@@ -19,6 +19,7 @@ from app.providers.base import (
     ProviderKind,
 )
 from app.schemas.generation import MAX_SEED, ImageGenerateRequest
+from app.services.character_studio import record_seeds
 from app.services.generated_media import delete_media_files, store_generated_image
 from app.services.image_generation import check_against_capabilities, resolve_references
 from app.services.storage import StorageService
@@ -113,6 +114,7 @@ def run_image_generate(ctx: JobContext) -> dict[str, Any]:
                         "guidance_scale": request.guidance_scale,
                         "num_images": count,
                         "watermark": bool(request.watermark),
+                        "purpose": request.purpose,
                     },
                     seeds=seeds,
                     input_asset_ids=request.reference_asset_ids,
@@ -121,6 +123,15 @@ def run_image_generate(ctx: JobContext) -> dict[str, Any]:
                     device=ctx.models.device.to_dict(),
                 )
             )
+            if request.character_id and request.purpose:
+                record_seeds(
+                    session,
+                    request.character_id,
+                    request.purpose,
+                    generation_id,
+                    model_key,
+                    [(a.id, seed_) for a, seed_ in zip(stored, seeds, strict=True)],
+                )
             session.commit()
         except BaseException:
             session.rollback()

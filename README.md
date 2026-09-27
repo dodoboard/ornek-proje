@@ -2,7 +2,7 @@
 
 Local-first AI content studio: consistent AI influencers, product ads, real-estate/land videos. FLUX.2 for images, a separate local video model for motion, FFmpeg for final composition. No paid cloud API is required at runtime.
 
-> Status: **Phase 5 — FLUX.2 image generation.** First real model integration (FLUX.2 [klein] via Diffusers) with text-to-image and reference images, stored with AI-disclosure metadata. The integration is verified against the diffusers v0.40.0 API with contract tests; **it has not yet been run on a GPU** — do the GPU check below on your machine.
+> Status: **Phase 6 — Character Studio (Demo A).** Create an AI influencer, generate portrait candidates, pick a canonical portrait, derive front / 3/4 / full-body views and generate the same influencer in new scenes — all conditioned on the character's reference images. FLUX.2 is verified against the diffusers v0.40.0 API with contract tests; **it has not yet been run on a GPU** (see "Image generation" for the GPU check).
 > See `docs/PHASE0_VALIDATION.md` for verified integrations and open items, and `MODEL_LICENSES.md` before downloading any model.
 
 ## Layout
@@ -147,6 +147,20 @@ Image Studio → prompt, format (1:1 / 4:5 / 9:16 / 16:9, all multiples of 16), 
 - Seeds are reproducible for the same model, settings and hardware; they are **not** a character-consistency mechanism — use reference images (Phase 6 builds the Character Bible on top of this).
 
 Unverified until run on your GPU: default step counts and reference limits in `models.yaml` (check the model card), VRAM use and speed per profile.
+
+## Character Studio (Phase 6)
+
+Influencers → create a character (adult age 18–120 is enforced; a real person's likeness requires ticking "I have permission to use this person's likeness", which stores a consent record). On the character page:
+
+1. **Canonical portrait** — optionally add reference photos, generate 1–4 candidates, pick one as canonical.
+2. **Views** — front, 3/4 and full body are generated with the canonical portrait as FLUX.2 reference image; pick one per slot.
+3. **New scene** — describe a scene; the canonical portrait plus the chosen views (up to the model's reference limit) are sent as references.
+
+**How consistency works (and its limits):** the model receives the character's own images as multi-reference input plus the same identity text (`Character Bible → identity`, built from the profile and immutable traits by `CharacterPromptBuilder`, templates in `backend/config/prompts/character.yaml`). Seeds are stored in the bible's seed history for reproducibility only — they do **not** keep a face consistent. Results still vary; regenerate and pick. LoRA training is not implemented (the bible has a `lora` field reserved for it).
+
+API: `GET/PATCH /api/characters/{id}/bible`, `POST /api/characters/{id}/prompt-preview`, `POST /api/characters/{id}/generate` (`purpose`: candidates | front | three_quarter | full_body | scene), `PUT /api/characters/{id}/views/{canonical|front|three_quarter|full_body}`.
+
+Rules: views and scenes need a canonical portrait first; an image generated for one character cannot become another character's view; scene text and prompts referencing minors are rejected; revoking a real person's consent blocks further generation.
 
 ## Checks
 

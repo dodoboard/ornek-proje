@@ -1,0 +1,18 @@
+# Character prompt templates. Placeholders: {identity}, {style}, {clothing}, {scene}, {house_style}.
+# FLUX.2 receives the character's reference images alongside these prompts; the text restates the
+# identity so the model keeps the same person. Keep templates model-agnostic.
+purposes:
+  candidates: >-
+    Photorealistic head-and-shoulders portrait of {identity}. Looking at the camera, relaxed
+    expression, neutral light-grey studio background, soft even key light, sharp focus. {style} {house_style}
+  front: >-
+    Front-facing portrait of the same person as in the reference image: {identity}. Facing the
+    camera directly, neutral expression, plain light-grey background, soft studio light. {house_style}
+  three_quarter: >-
+    Three-quarter view portrait of the same person as in the reference image: {identity}. Head
+    turned about 45 degrees to the side, plain light-grey background, soft studio light. {house_style}
+  full_body: >-
+    Full-body photo of the same person as in the reference image: {identity}. Standing, entire body
+    visible from head to feet, wearing {clothing}, plain light-grey studio background. {house_style}
+  scene: >-
+    The same person as in the reference images, {identity}, {scene}. {style} {house_style}

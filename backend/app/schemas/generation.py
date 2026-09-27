@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 from app.core.safety import find_minor_reference
 from app.schemas.asset import AssetRead
 from app.schemas.common import TimestampedRead
+from app.services.prompts.character import CharacterPurpose
 
 MAX_SEED = 2**32 - 1
 
@@ -28,6 +29,7 @@ class ImageGenerateRequest(BaseModel):
     project_id: str | None = None
     character_id: str | None = None
     watermark: bool | None = Field(default=None, description="Defaults to the 'AI watermark' setting.")
+    purpose: CharacterPurpose | None = Field(default=None, description="Set by Character Studio workflows.")
 
     @model_validator(mode="after")
     def _adult_only(self) -> Self:

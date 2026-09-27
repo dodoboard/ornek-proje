@@ -2,6 +2,7 @@
 
 from app.models.asset import Asset
 from app.models.character import Character
+from app.models.character_bible import CharacterBible
 from app.models.consent import Consent
 from app.models.generation import Generation
 from app.models.job import Job, Worker
@@ -16,6 +17,7 @@ __all__ = [
     "Asset",
     "Character",
     "CharacterAsset",
+    "CharacterBible",
     "Consent",
     "Generation",
     "Job",

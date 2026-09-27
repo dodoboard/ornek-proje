@@ -245,6 +245,219 @@
         "title": "Body_upload_asset_api_assets_post",
         "type": "object"
       },
+      "CharacterBibleRead": {
+        "properties": {
+          "character_id": {
+            "title": "Character Id",
+            "type": "string"
+          },
+          "generation_settings": {
+            "additionalProperties": true,
+            "title": "Generation Settings",
+            "type": "object"
+          },
+          "identity": {
+            "description": "Identity description used in every prompt",
+            "title": "Identity",
+            "type": "string"
+          },
+          "immutable_traits": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Immutable Traits",
+            "type": "array"
+          },
+          "lora": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lora"
+          },
+          "mutable_traits": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Mutable Traits",
+            "type": "array"
+          },
+          "negative_prompts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Negative Prompts",
+            "type": "array"
+          },
+          "prompt_template": {
+            "title": "Prompt Template",
+            "type": "string"
+          },
+          "reference_asset_ids": {
+            "description": "Uploaded reference photos",
+            "items": {
+              "type": "string"
+            },
+            "title": "Reference Asset Ids",
+            "type": "array"
+          },
+          "seed_history": {
+            "items": {
+              "$ref": "#/components/schemas/SeedRecord"
+            },
+            "title": "Seed History",
+            "type": "array"
+          },
+          "views": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": "role \u2192 asset id (canonical, front, three_quarter, full_body)",
+            "title": "Views",
+            "type": "object"
+          },
+          "visual_descriptors": {
+            "additionalProperties": true,
+            "title": "Visual Descriptors",
+            "type": "object"
+          }
+        },
+        "required": [
+          "character_id",
+          "visual_descriptors",
+          "immutable_traits",
+          "mutable_traits",
+          "prompt_template",
+          "negative_prompts",
+          "generation_settings",
+          "seed_history",
+          "lora",
+          "views",
+          "reference_asset_ids",
+          "identity"
+        ],
+        "title": "CharacterBibleRead",
+        "type": "object"
+      },
+      "CharacterBibleUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "generation_settings": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation Settings"
+          },
+          "immutable_traits": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 300,
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Immutable Traits"
+          },
+          "lora": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lora"
+          },
+          "mutable_traits": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 300,
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mutable Traits"
+          },
+          "negative_prompts": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 300,
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Stored for models that support it; FLUX.2 ignores negative prompts.",
+            "title": "Negative Prompts"
+          },
+          "prompt_template": {
+            "anyOf": [
+              {
+                "maxLength": 10000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "House style appended to every prompt",
+            "title": "Prompt Template"
+          },
+          "visual_descriptors": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Visual Descriptors"
+          }
+        },
+        "title": "CharacterBibleUpdate",
+        "type": "object"
+      },
       "CharacterCreate": {
         "properties": {
           "adult_age": {
@@ -396,6 +609,111 @@
           "adult_age"
         ],
         "title": "CharacterCreate",
+        "type": "object"
+      },
+      "CharacterGenerateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "aspect_ratio": {
+            "anyOf": [
+              {
+                "enum": [
+                  "1:1",
+                  "4:5",
+                  "9:16",
+                  "16:9"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aspect Ratio"
+          },
+          "model_key": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Key"
+          },
+          "num_images": {
+            "default": 2,
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Num Images",
+            "type": "integer"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "purpose": {
+            "enum": [
+              "candidates",
+              "front",
+              "three_quarter",
+              "full_body",
+              "scene"
+            ],
+            "title": "Purpose",
+            "type": "string"
+          },
+          "scene": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scene"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "steps": {
+            "anyOf": [
+              {
+                "maximum": 150.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Steps"
+          }
+        },
+        "required": [
+          "purpose"
+        ],
+        "title": "CharacterGenerateRequest",
         "type": "object"
       },
       "CharacterRead": {
@@ -1328,6 +1646,25 @@
             "title": "Prompt",
             "type": "string"
           },
+          "purpose": {
+            "anyOf": [
+              {
+                "enum": [
+                  "candidates",
+                  "front",
+                  "three_quarter",
+                  "full_body",
+                  "scene"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set by Character Studio workflows.",
+            "title": "Purpose"
+          },
           "reference_asset_ids": {
             "items": {
               "type": "string"
@@ -1962,10 +2299,10 @@
             "anyOf": [
               {
                 "enum": [
-                  "9:16",
-                  "16:9",
                   "1:1",
-                  "4:5"
+                  "4:5",
+                  "9:16",
+                  "16:9"
                 ],
                 "type": "string"
               },
@@ -2742,6 +3079,49 @@
           }
         },
         "title": "ProjectUpdate",
+        "type": "object"
+      },
+      "PromptPreview": {
+        "properties": {
+          "height": {
+            "title": "Height",
+            "type": "integer"
+          },
+          "prompt": {
+            "title": "Prompt",
+            "type": "string"
+          },
+          "purpose": {
+            "enum": [
+              "candidates",
+              "front",
+              "three_quarter",
+              "full_body",
+              "scene"
+            ],
+            "title": "Purpose",
+            "type": "string"
+          },
+          "reference_asset_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reference Asset Ids",
+            "type": "array"
+          },
+          "width": {
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "purpose",
+          "prompt",
+          "reference_asset_ids",
+          "width",
+          "height"
+        ],
+        "title": "PromptPreview",
         "type": "object"
       },
       "PropertyCategory": {
@@ -3914,6 +4294,58 @@
         "title": "ProviderStatus",
         "type": "string"
       },
+      "SeedRecord": {
+        "properties": {
+          "asset_id": {
+            "title": "Asset Id",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "generation_id": {
+            "title": "Generation Id",
+            "type": "string"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "purpose": {
+            "title": "Purpose",
+            "type": "string"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "seed",
+          "purpose",
+          "generation_id",
+          "asset_id",
+          "model",
+          "created_at"
+        ],
+        "title": "SeedRecord",
+        "type": "object"
+      },
+      "SetViewRequest": {
+        "properties": {
+          "asset_id": {
+            "title": "Asset Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "asset_id"
+        ],
+        "title": "SetViewRequest",
+        "type": "object"
+      },
       "StorageStatus": {
         "properties": {
           "data_dir": {
@@ -4643,6 +5075,272 @@
         "summary": "Detach Asset",
         "tags": [
           "characters"
+        ]
+      }
+    },
+    "/api/characters/{character_id}/bible": {
+      "get": {
+        "operationId": "get_bible_api_characters__character_id__bible_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "character_id",
+            "required": true,
+            "schema": {
+              "title": "Character Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CharacterBibleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Bible",
+        "tags": [
+          "character studio"
+        ]
+      },
+      "patch": {
+        "operationId": "update_bible_api_characters__character_id__bible_patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "character_id",
+            "required": true,
+            "schema": {
+              "title": "Character Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CharacterBibleUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CharacterBibleRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Bible",
+        "tags": [
+          "character studio"
+        ]
+      }
+    },
+    "/api/characters/{character_id}/generate": {
+      "post": {
+        "description": "Candidates \u2192 pick canonical \u2192 views \u2192 scenes, all conditioned on this character's references.",
+        "operationId": "generate_api_characters__character_id__generate_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "character_id",
+            "required": true,
+            "schema": {
+              "title": "Character Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CharacterGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate",
+        "tags": [
+          "character studio"
+        ]
+      }
+    },
+    "/api/characters/{character_id}/prompt-preview": {
+      "post": {
+        "description": "Show exactly which prompt and reference images a generation would use.",
+        "operationId": "prompt_preview_api_characters__character_id__prompt_preview_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "character_id",
+            "required": true,
+            "schema": {
+              "title": "Character Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CharacterGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptPreview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Prompt Preview",
+        "tags": [
+          "character studio"
+        ]
+      }
+    },
+    "/api/characters/{character_id}/views/{role}": {
+      "put": {
+        "description": "Use an image as the canonical portrait or a front / 3/4 / full-body view.",
+        "operationId": "set_view_api_characters__character_id__views__role__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "character_id",
+            "required": true,
+            "schema": {
+              "title": "Character Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "role",
+            "required": true,
+            "schema": {
+              "enum": [
+                "canonical",
+                "front",
+                "three_quarter",
+                "full_body"
+              ],
+              "title": "Role",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetViewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CharacterRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Set View",
+        "tags": [
+          "character studio"
         ]
       }
     },

@@ -14,6 +14,7 @@ from app.api.errors import register_exception_handlers
 from app.api.middleware import RequestContextMiddleware
 from app.api.routers import (
     assets,
+    character_studio,
     characters,
     consents,
     generate,
@@ -89,6 +90,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         assets.router,
         consents.router,
         characters.router,
+        character_studio.router,
         products.router,
         properties.router,
         projects.router,

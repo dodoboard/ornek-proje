@@ -144,6 +144,84 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/characters/{character_id}/bible": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Bible */
+        get: operations["get_bible_api_characters__character_id__bible_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Bible */
+        patch: operations["update_bible_api_characters__character_id__bible_patch"];
+        trace?: never;
+    };
+    "/api/characters/{character_id}/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate
+         * @description Candidates → pick canonical → views → scenes, all conditioned on this character's references.
+         */
+        post: operations["generate_api_characters__character_id__generate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/characters/{character_id}/prompt-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Prompt Preview
+         * @description Show exactly which prompt and reference images a generation would use.
+         */
+        post: operations["prompt_preview_api_characters__character_id__prompt_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/characters/{character_id}/views/{role}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Set View
+         * @description Use an image as the canonical portrait or a front / 3/4 / full-body view.
+         */
+        put: operations["set_view_api_characters__character_id__views__role__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/consents": {
         parameters: {
             query?: never;
@@ -670,6 +748,79 @@ export interface components {
              */
             file: string;
         };
+        /** CharacterBibleRead */
+        CharacterBibleRead: {
+            /** Character Id */
+            character_id: string;
+            /** Generation Settings */
+            generation_settings: {
+                [key: string]: unknown;
+            };
+            /**
+             * Identity
+             * @description Identity description used in every prompt
+             */
+            identity: string;
+            /** Immutable Traits */
+            immutable_traits: string[];
+            /** Lora */
+            lora: {
+                [key: string]: unknown;
+            } | null;
+            /** Mutable Traits */
+            mutable_traits: string[];
+            /** Negative Prompts */
+            negative_prompts: string[];
+            /** Prompt Template */
+            prompt_template: string;
+            /**
+             * Reference Asset Ids
+             * @description Uploaded reference photos
+             */
+            reference_asset_ids: string[];
+            /** Seed History */
+            seed_history: components["schemas"]["SeedRecord"][];
+            /**
+             * Views
+             * @description role → asset id (canonical, front, three_quarter, full_body)
+             */
+            views: {
+                [key: string]: string | null;
+            };
+            /** Visual Descriptors */
+            visual_descriptors: {
+                [key: string]: unknown;
+            };
+        };
+        /** CharacterBibleUpdate */
+        CharacterBibleUpdate: {
+            /** Generation Settings */
+            generation_settings?: {
+                [key: string]: unknown;
+            } | null;
+            /** Immutable Traits */
+            immutable_traits?: string[] | null;
+            /** Lora */
+            lora?: {
+                [key: string]: unknown;
+            } | null;
+            /** Mutable Traits */
+            mutable_traits?: string[] | null;
+            /**
+             * Negative Prompts
+             * @description Stored for models that support it; FLUX.2 ignores negative prompts.
+             */
+            negative_prompts?: string[] | null;
+            /**
+             * Prompt Template
+             * @description House style appended to every prompt
+             */
+            prompt_template?: string | null;
+            /** Visual Descriptors */
+            visual_descriptors?: {
+                [key: string]: string;
+            } | null;
+        };
         /** CharacterCreate */
         CharacterCreate: {
             /** Adult Age */
@@ -775,6 +926,31 @@ export interface components {
             voice_profile?: {
                 [key: string]: unknown;
             };
+        };
+        /** CharacterGenerateRequest */
+        CharacterGenerateRequest: {
+            /** Aspect Ratio */
+            aspect_ratio?: ("1:1" | "4:5" | "9:16" | "16:9") | null;
+            /** Model Key */
+            model_key?: string | null;
+            /**
+             * Num Images
+             * @default 2
+             */
+            num_images?: number;
+            /** Project Id */
+            project_id?: string | null;
+            /**
+             * Purpose
+             * @enum {string}
+             */
+            purpose: "candidates" | "front" | "three_quarter" | "full_body" | "scene";
+            /** Scene */
+            scene?: string | null;
+            /** Seed */
+            seed?: number | null;
+            /** Steps */
+            steps?: number | null;
         };
         /** CharacterRead */
         CharacterRead: {
@@ -1083,6 +1259,11 @@ export interface components {
             project_id?: string | null;
             /** Prompt */
             prompt: string;
+            /**
+             * Purpose
+             * @description Set by Character Studio workflows.
+             */
+            purpose?: ("candidates" | "front" | "three_quarter" | "full_body" | "scene") | null;
             /** Reference Asset Ids */
             reference_asset_ids?: string[];
             /** Seed */
@@ -1309,7 +1490,7 @@ export interface components {
             /** Ai Watermark */
             ai_watermark?: boolean | null;
             /** Default Aspect Ratio */
-            default_aspect_ratio?: ("9:16" | "16:9" | "1:1" | "4:5") | null;
+            default_aspect_ratio?: ("1:1" | "4:5" | "9:16" | "16:9") | null;
             /** Default Language */
             default_language?: string | null;
             /** Default Models */
@@ -1550,6 +1731,22 @@ export interface components {
             /** Property Id */
             property_id?: string | null;
             settings?: components["schemas"]["ProjectSettings"] | null;
+        };
+        /** PromptPreview */
+        PromptPreview: {
+            /** Height */
+            height: number;
+            /** Prompt */
+            prompt: string;
+            /**
+             * Purpose
+             * @enum {string}
+             */
+            purpose: "candidates" | "front" | "three_quarter" | "full_body" | "scene";
+            /** Reference Asset Ids */
+            reference_asset_ids: string[];
+            /** Width */
+            width: number;
         };
         /**
          * PropertyCategory
@@ -1796,6 +1993,29 @@ export interface components {
          * @enum {string}
          */
         ProviderStatus: "available" | "model_missing" | "not_installed" | "not_implemented" | "disabled";
+        /** SeedRecord */
+        SeedRecord: {
+            /** Asset Id */
+            asset_id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Generation Id */
+            generation_id: string;
+            /** Model */
+            model: string;
+            /** Purpose */
+            purpose: string;
+            /** Seed */
+            seed: number;
+        };
+        /** SetViewRequest */
+        SetViewRequest: {
+            /** Asset Id */
+            asset_id: string;
+        };
         /** StorageStatus */
         StorageStatus: {
             /** Data Dir */
@@ -2242,6 +2462,178 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_bible_api_characters__character_id__bible_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterBibleRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_bible_api_characters__character_id__bible_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterBibleUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterBibleRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_api_characters__character_id__generate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterGenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    prompt_preview_api_characters__character_id__prompt_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterGenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PromptPreview"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_view_api_characters__character_id__views__role__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+                role: "canonical" | "front" | "three_quarter" | "full_body";
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SetViewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterRead"];
+                };
             };
             /** @description Validation Error */
             422: {

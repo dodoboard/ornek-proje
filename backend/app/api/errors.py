@@ -8,6 +8,7 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -44,6 +45,15 @@ async def _validation_error(request: Request, exc: Exception) -> JSONResponse:
     return _error(422, ErrorCode.VALIDATION_ERROR, "Request validation failed.", fields=fields)
 
 
+async def _model_validation_error(request: Request, exc: Exception) -> JSONResponse:
+    """Pydantic errors raised inside services (e.g. a built request failing a guard) are client errors."""
+    assert isinstance(exc, ValidationError)
+    fields = [
+        {"loc": [str(p) for p in err.get("loc", ())], "msg": err.get("msg", "")} for err in exc.errors()
+    ]
+    return _error(422, ErrorCode.VALIDATION_ERROR, "Request validation failed.", fields=fields)
+
+
 async def _http_error(request: Request, exc: Exception) -> JSONResponse:
     assert isinstance(exc, StarletteHTTPException)
     code = _HTTP_CODES.get(exc.status_code, f"HTTP_{exc.status_code}")
@@ -69,6 +79,7 @@ async def _unhandled_error(request: Request, exc: Exception) -> JSONResponse:
 def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(AppError, _app_error)
     app.add_exception_handler(RequestValidationError, _validation_error)
+    app.add_exception_handler(ValidationError, _model_validation_error)
     app.add_exception_handler(StarletteHTTPException, _http_error)
     app.add_exception_handler(SQLAlchemyError, _db_error)
     app.add_exception_handler(Exception, _unhandled_error)

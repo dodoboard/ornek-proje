@@ -119,7 +119,7 @@ def test_random_seed_when_omitted(
     ("overrides", "code"),
     [
         ({"width": 250}, "INVALID_GENERATION_REQUEST"),
-        ({"reference_asset_ids": ["AST_x"]}, "INVALID_GENERATION_REQUEST"),  # fake: 0 references
+        ({"reference_asset_ids": [f"AST_{i}" for i in range(5)]}, "INVALID_GENERATION_REQUEST"),  # max 4
         ({"guidance_scale": 4.0}, "INVALID_GENERATION_REQUEST"),
         ({"project_id": "PRJ_missing"}, "NOT_FOUND"),
     ],
