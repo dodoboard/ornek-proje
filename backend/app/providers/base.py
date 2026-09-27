@@ -194,6 +194,8 @@ class ImageRequest:
 
 @dataclass
 class InpaintRequest(ImageRequest):
+    """Repaint the white area of `mask` inside `image`; `reference_images` condition the new content."""
+
     image: Path | None = None
     mask: Path | None = None
     strength: float = 1.0
