@@ -38,3 +38,10 @@ describe("apiFetch", () => {
     await expect(apiFetch("/x", undefined, fetchImpl)).rejects.toMatchObject({ code: "BACKEND_UNREACHABLE", status: 0 });
   });
 });
+
+describe("apiFetch 204", () => {
+  it("returns undefined for No Content", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    await expect(apiFetch("/api/projects/PRJ_1", { method: "DELETE" }, fetchImpl)).resolves.toBeUndefined();
+  });
+});

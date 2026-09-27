@@ -4,6 +4,181 @@
  */
 
 export interface paths {
+    "/api/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Asset */
+        post: operations["upload_asset_api_assets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/assets/{asset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Asset */
+        get: operations["get_asset_api_assets__asset_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Asset */
+        delete: operations["delete_asset_api_assets__asset_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/assets/{asset_id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Asset Content */
+        get: operations["get_asset_content_api_assets__asset_id__content_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/characters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Characters */
+        get: operations["list_characters_api_characters_get"];
+        put?: never;
+        /** Create Character */
+        post: operations["create_character_api_characters_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/characters/{character_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Character */
+        get: operations["get_character_api_characters__character_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Character */
+        delete: operations["delete_character_api_characters__character_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Character */
+        patch: operations["update_character_api_characters__character_id__patch"];
+        trace?: never;
+    };
+    "/api/characters/{character_id}/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attach Asset */
+        post: operations["attach_asset_api_characters__character_id__assets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/characters/{character_id}/assets/{asset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Detach Asset */
+        delete: operations["detach_asset_api_characters__character_id__assets__asset_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/consents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Consents */
+        get: operations["list_consents_api_consents_get"];
+        put?: never;
+        /** Create Consent */
+        post: operations["create_consent_api_consents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/consents/{consent_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Consent */
+        get: operations["get_consent_api_consents__consent_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/consents/{consent_id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Revoke Consent */
+        post: operations["revoke_consent_api_consents__consent_id__revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/health": {
         parameters: {
             query?: never;
@@ -16,6 +191,185 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Products */
+        get: operations["list_products_api_products_get"];
+        put?: never;
+        /** Create Product */
+        post: operations["create_product_api_products_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/{product_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Product */
+        get: operations["get_product_api_products__product_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Product */
+        delete: operations["delete_product_api_products__product_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Product */
+        patch: operations["update_product_api_products__product_id__patch"];
+        trace?: never;
+    };
+    "/api/products/{product_id}/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attach Asset */
+        post: operations["attach_asset_api_products__product_id__assets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/{product_id}/assets/{asset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Detach Asset */
+        delete: operations["detach_asset_api_products__product_id__assets__asset_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/projects": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Projects */
+        get: operations["list_projects_api_projects_get"];
+        put?: never;
+        /** Create Project */
+        post: operations["create_project_api_projects_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/projects/{project_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Project */
+        get: operations["get_project_api_projects__project_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Project */
+        delete: operations["delete_project_api_projects__project_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Project */
+        patch: operations["update_project_api_projects__project_id__patch"];
+        trace?: never;
+    };
+    "/api/properties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Properties */
+        get: operations["list_properties_api_properties_get"];
+        put?: never;
+        /** Create Property */
+        post: operations["create_property_api_properties_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/properties/{property_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Property */
+        get: operations["get_property_api_properties__property_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Property */
+        delete: operations["delete_property_api_properties__property_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Property */
+        patch: operations["update_property_api_properties__property_id__patch"];
+        trace?: never;
+    };
+    "/api/properties/{property_id}/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Attach Asset */
+        post: operations["attach_asset_api_properties__property_id__assets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/properties/{property_id}/assets/{asset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Detach Asset */
+        delete: operations["detach_asset_api_properties__property_id__assets__asset_id__delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -42,6 +396,76 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AssetKind
+         * @enum {string}
+         */
+        AssetKind: "image" | "video" | "audio";
+        /** AssetLinkCreate */
+        AssetLinkCreate: {
+            /** Asset Id */
+            asset_id: string;
+            /**
+             * Position
+             * @default 0
+             */
+            position?: number;
+            role: components["schemas"]["AssetRole"];
+        };
+        /** AssetLinkRead */
+        AssetLinkRead: {
+            asset: components["schemas"]["AssetRead"];
+            /** Position */
+            position: number;
+            role: components["schemas"]["AssetRole"];
+        };
+        /** AssetRead */
+        AssetRead: {
+            /** Ai Generated */
+            ai_generated: boolean;
+            /** Checksum Sha256 */
+            checksum_sha256: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Duration S */
+            duration_s: number | null;
+            /** Height */
+            height: number | null;
+            /** Id */
+            id: string;
+            kind: components["schemas"]["AssetKind"];
+            /** Metadata */
+            metadata: {
+                [key: string]: unknown;
+            };
+            /** Mime */
+            mime: string;
+            /** Original Filename */
+            original_filename: string | null;
+            /** Size Bytes */
+            size_bytes: number;
+            source: components["schemas"]["AssetSource"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Width */
+            width: number | null;
+        };
+        /**
+         * AssetRole
+         * @enum {string}
+         */
+        AssetRole: "reference" | "canonical" | "front" | "three_quarter" | "full_body" | "product_photo" | "cutout" | "mask" | "photo" | "footage" | "drone" | "floor_plan";
+        /**
+         * AssetSource
+         * @enum {string}
+         */
+        AssetSource: "upload" | "generated" | "derived";
         /** BinaryStatus */
         BinaryStatus: {
             /** Path */
@@ -54,6 +478,311 @@ export interface components {
             /** Version */
             version?: string | null;
         };
+        /** Body_upload_asset_api_assets_post */
+        Body_upload_asset_api_assets_post: {
+            /**
+             * File
+             * @description JPEG, PNG, WEBP, MP4, MOV, WAV, MP3 or M4A
+             */
+            file: string;
+        };
+        /** CharacterCreate */
+        CharacterCreate: {
+            /** Adult Age */
+            adult_age: number;
+            /**
+             * Body Description
+             * @default
+             */
+            body_description?: string;
+            /**
+             * Brand Tone
+             * @default
+             */
+            brand_tone?: string;
+            /**
+             * Clothing Preferences
+             * @default
+             */
+            clothing_preferences?: string;
+            /**
+             * Color Palette
+             * @default []
+             */
+            color_palette?: string[];
+            /** Consent Id */
+            consent_id?: string | null;
+            /**
+             * Default Language
+             * @default tr
+             */
+            default_language?: string;
+            /**
+             * Default Prompt
+             * @default
+             */
+            default_prompt?: string;
+            /**
+             * Description
+             * @default
+             */
+            description?: string;
+            /**
+             * Eye Color
+             * @default
+             */
+            eye_color?: string;
+            /**
+             * Face Description
+             * @default
+             */
+            face_description?: string;
+            /**
+             * Hair
+             * @default
+             */
+            hair?: string;
+            /**
+             * Is Real Person
+             * @default false
+             */
+            is_real_person?: boolean;
+            /** Name */
+            name: string;
+            /**
+             * Negative Prompt
+             * @default
+             */
+            negative_prompt?: string;
+            /**
+             * Personality
+             * @default
+             */
+            personality?: string;
+            /**
+             * Preferred Camera Angles
+             * @default []
+             */
+            preferred_camera_angles?: string[];
+            /**
+             * Presentation
+             * @default
+             */
+            presentation?: string;
+            /**
+             * Skin Appearance
+             * @default
+             */
+            skin_appearance?: string;
+            /**
+             * Speaking Style
+             * @default
+             */
+            speaking_style?: string;
+            /**
+             * Style
+             * @default
+             */
+            style?: string;
+            /**
+             * Voice Profile
+             * @default {}
+             */
+            voice_profile?: {
+                [key: string]: unknown;
+            };
+        };
+        /** CharacterRead */
+        CharacterRead: {
+            /** Adult Age */
+            adult_age: number;
+            /** Assets */
+            assets: components["schemas"]["AssetLinkRead"][];
+            /** Body Description */
+            body_description: string;
+            /** Brand Tone */
+            brand_tone: string;
+            /** Clothing Preferences */
+            clothing_preferences: string;
+            /** Color Palette */
+            color_palette: string[];
+            /** Consent Id */
+            consent_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Default Language */
+            default_language: string;
+            /** Default Prompt */
+            default_prompt: string;
+            /** Description */
+            description: string;
+            /** Eye Color */
+            eye_color: string;
+            /** Face Description */
+            face_description: string;
+            /** Hair */
+            hair: string;
+            /** Id */
+            id: string;
+            /** Is Real Person */
+            is_real_person: boolean;
+            /** Name */
+            name: string;
+            /** Negative Prompt */
+            negative_prompt: string;
+            /** Personality */
+            personality: string;
+            /** Preferred Camera Angles */
+            preferred_camera_angles: string[];
+            /** Presentation */
+            presentation: string;
+            /** Skin Appearance */
+            skin_appearance: string;
+            /** Speaking Style */
+            speaking_style: string;
+            /** Style */
+            style: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Voice Profile */
+            voice_profile: {
+                [key: string]: unknown;
+            };
+        };
+        /** CharacterSummary */
+        CharacterSummary: {
+            /** Adult Age */
+            adult_age: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Default Language */
+            default_language: string;
+            /** Id */
+            id: string;
+            /** Is Real Person */
+            is_real_person: boolean;
+            /** Name */
+            name: string;
+            /** Style */
+            style: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** CharacterUpdate */
+        CharacterUpdate: {
+            /** Adult Age */
+            adult_age?: number | null;
+            /** Body Description */
+            body_description?: string | null;
+            /** Brand Tone */
+            brand_tone?: string | null;
+            /** Clothing Preferences */
+            clothing_preferences?: string | null;
+            /** Color Palette */
+            color_palette?: string[] | null;
+            /** Consent Id */
+            consent_id?: string | null;
+            /** Default Language */
+            default_language?: string | null;
+            /** Default Prompt */
+            default_prompt?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Eye Color */
+            eye_color?: string | null;
+            /** Face Description */
+            face_description?: string | null;
+            /** Hair */
+            hair?: string | null;
+            /** Is Real Person */
+            is_real_person?: boolean | null;
+            /** Name */
+            name?: string | null;
+            /** Negative Prompt */
+            negative_prompt?: string | null;
+            /** Personality */
+            personality?: string | null;
+            /** Preferred Camera Angles */
+            preferred_camera_angles?: string[] | null;
+            /** Presentation */
+            presentation?: string | null;
+            /** Skin Appearance */
+            skin_appearance?: string | null;
+            /** Speaking Style */
+            speaking_style?: string | null;
+            /** Style */
+            style?: string | null;
+            /** Voice Profile */
+            voice_profile?: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** ConsentCreate */
+        ConsentCreate: {
+            /**
+             * Confirm
+             * @description Must be true: confirms the consent statement.
+             * @constant
+             */
+            confirm: true;
+            /** Evidence Asset Id */
+            evidence_asset_id?: string | null;
+            /** Granted By */
+            granted_by: string;
+            /** Subject Name */
+            subject_name: string;
+            subject_type: components["schemas"]["ConsentSubject"];
+        };
+        /** ConsentRead */
+        ConsentRead: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Evidence Asset Id */
+            evidence_asset_id: string | null;
+            /**
+             * Granted At
+             * Format: date-time
+             */
+            granted_at: string;
+            /** Granted By */
+            granted_by: string;
+            /** Id */
+            id: string;
+            /** Is Active */
+            is_active: boolean;
+            /** Revoked At */
+            revoked_at: string | null;
+            /** Statement */
+            statement: string;
+            /** Subject Name */
+            subject_name: string;
+            subject_type: components["schemas"]["ConsentSubject"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * ConsentSubject
+         * @enum {string}
+         */
+        ConsentSubject: "face" | "voice";
         /** GpuInfo */
         GpuInfo: {
             /** Driver Version */
@@ -77,18 +806,23 @@ export interface components {
              * Devices
              * @default []
              */
-            devices: components["schemas"]["GpuInfo"][];
+            devices?: components["schemas"]["GpuInfo"][];
             /**
              * Source
              * @default nvidia-smi
              * @constant
              */
-            source: "nvidia-smi";
+            source?: "nvidia-smi";
             /**
              * Status
              * @enum {string}
              */
             status: "ok" | "missing" | "error" | "unknown";
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /** HealthResponse */
         HealthResponse: {
@@ -100,12 +834,492 @@ export interface components {
             /** Version */
             version: string;
         };
+        /**
+         * ListingType
+         * @enum {string}
+         */
+        ListingType: "sale" | "rent";
+        /** Page[CharacterSummary] */
+        Page_CharacterSummary_: {
+            /** Items */
+            items: components["schemas"]["CharacterSummary"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[ConsentRead] */
+        Page_ConsentRead_: {
+            /** Items */
+            items: components["schemas"]["ConsentRead"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[ProductSummary] */
+        Page_ProductSummary_: {
+            /** Items */
+            items: components["schemas"]["ProductSummary"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[ProjectRead] */
+        Page_ProjectRead_: {
+            /** Items */
+            items: components["schemas"]["ProjectRead"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** Page[PropertySummary] */
+        Page_PropertySummary_: {
+            /** Items */
+            items: components["schemas"]["PropertySummary"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
         /** PrivacyStatus */
         PrivacyStatus: {
             /** Offline Mode */
             offline_mode: boolean;
             /** Telemetry Enabled */
             telemetry_enabled: boolean;
+        };
+        /** ProductCreate */
+        ProductCreate: {
+            /**
+             * Brand
+             * @default
+             */
+            brand?: string;
+            /**
+             * Cta
+             * @default
+             */
+            cta?: string;
+            /** Currency */
+            currency?: string | null;
+            /**
+             * Description
+             * @default
+             */
+            description?: string;
+            /**
+             * Features
+             * @default []
+             */
+            features?: string[];
+            /** Name */
+            name: string;
+            /** Price */
+            price?: number | string | null;
+            /** Website */
+            website?: string | null;
+        };
+        /** ProductRead */
+        ProductRead: {
+            /** Assets */
+            assets: components["schemas"]["AssetLinkRead"][];
+            /** Brand */
+            brand: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Cta */
+            cta: string;
+            /** Currency */
+            currency: string | null;
+            /** Description */
+            description: string;
+            /** Features */
+            features: string[];
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Price */
+            price: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Website */
+            website: string | null;
+        };
+        /** ProductSummary */
+        ProductSummary: {
+            /** Brand */
+            brand: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Currency */
+            currency: string | null;
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Price */
+            price: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ProductUpdate */
+        ProductUpdate: {
+            /** Brand */
+            brand?: string | null;
+            /** Cta */
+            cta?: string | null;
+            /** Currency */
+            currency?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Features */
+            features?: string[] | null;
+            /** Name */
+            name?: string | null;
+            /** Price */
+            price?: number | string | null;
+            /** Website */
+            website?: string | null;
+        };
+        /** ProjectCreate */
+        ProjectCreate: {
+            /** Character Id */
+            character_id?: string | null;
+            /**
+             * Description
+             * @default
+             */
+            description?: string;
+            /** Name */
+            name: string;
+            /** Product Id */
+            product_id?: string | null;
+            /** Property Id */
+            property_id?: string | null;
+            /**
+             * @default {
+             *       "aspect_ratio": "9:16",
+             *       "duration_s": 30,
+             *       "language": "tr",
+             *       "platform": "generic",
+             *       "tone": "professional"
+             *     }
+             */
+            settings?: components["schemas"]["ProjectSettings"];
+            type: components["schemas"]["ProjectType"];
+        };
+        /** ProjectRead */
+        ProjectRead: {
+            /** Character Id */
+            character_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Description */
+            description: string;
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Product Id */
+            product_id: string | null;
+            /** Property Id */
+            property_id: string | null;
+            settings: components["schemas"]["ProjectSettings"];
+            type: components["schemas"]["ProjectType"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ProjectSettings */
+        ProjectSettings: {
+            /**
+             * Aspect Ratio
+             * @default 9:16
+             * @enum {string}
+             */
+            aspect_ratio?: "9:16" | "16:9" | "1:1" | "4:5";
+            /**
+             * Duration S
+             * @default 30
+             * @enum {integer}
+             */
+            duration_s?: 15 | 30 | 60;
+            /**
+             * Language
+             * @default tr
+             */
+            language?: string;
+            /**
+             * Platform
+             * @default generic
+             * @enum {string}
+             */
+            platform?: "instagram" | "tiktok" | "youtube" | "youtube_shorts" | "generic";
+            /** Preset */
+            preset?: string | null;
+            /**
+             * Tone
+             * @default professional
+             * @enum {string}
+             */
+            tone?: "luxury" | "friendly" | "professional" | "energetic" | "minimal" | "cinematic";
+        };
+        /**
+         * ProjectType
+         * @enum {string}
+         */
+        ProjectType: "social" | "product_ad" | "real_estate" | "land" | "custom";
+        /** ProjectUpdate */
+        ProjectUpdate: {
+            /** Character Id */
+            character_id?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Product Id */
+            product_id?: string | null;
+            /** Property Id */
+            property_id?: string | null;
+            settings?: components["schemas"]["ProjectSettings"] | null;
+        };
+        /**
+         * PropertyCategory
+         * @enum {string}
+         */
+        PropertyCategory: "property" | "land";
+        /** PropertyCreate */
+        PropertyCreate: {
+            /** Bathrooms */
+            bathrooms?: number | null;
+            /** Building Age */
+            building_age?: number | null;
+            category: components["schemas"]["PropertyCategory"];
+            /** Contact */
+            contact?: string | null;
+            /** Currency */
+            currency?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Electricity */
+            electricity?: boolean | null;
+            /** Facts Source */
+            facts_source?: string | null;
+            /** Features */
+            features?: string[] | null;
+            /** Floors */
+            floors?: number | null;
+            /** Land Square Meters */
+            land_square_meters?: number | null;
+            /** Latitude */
+            latitude?: number | null;
+            listing_type?: components["schemas"]["ListingType"] | null;
+            /** Location */
+            location?: string | null;
+            /** Longitude */
+            longitude?: number | null;
+            /**
+             * Mark Facts Verified
+             * @description Set when the user confirms all entered facts are accurate.
+             * @default false
+             */
+            mark_facts_verified?: boolean;
+            /** Parcel Info */
+            parcel_info?: string | null;
+            /** Price */
+            price?: number | string | null;
+            /** Property Type */
+            property_type?: string | null;
+            /** Road Access */
+            road_access?: boolean | null;
+            /** Rooms */
+            rooms?: string | null;
+            /** Square Meters */
+            square_meters?: number | null;
+            /** Title */
+            title: string;
+            /** Water */
+            water?: boolean | null;
+            /** Website */
+            website?: string | null;
+            /** Zoning */
+            zoning?: string | null;
+        };
+        /** PropertyRead */
+        PropertyRead: {
+            /** Assets */
+            assets: components["schemas"]["AssetLinkRead"][];
+            /** Bathrooms */
+            bathrooms: number | null;
+            /** Building Age */
+            building_age: number | null;
+            category: components["schemas"]["PropertyCategory"];
+            /** Contact */
+            contact: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Currency */
+            currency: string | null;
+            /** Description */
+            description: string;
+            /** Electricity */
+            electricity: boolean | null;
+            /** Facts Source */
+            facts_source: string | null;
+            /** Facts Verified At */
+            facts_verified_at: string | null;
+            /** Features */
+            features: string[];
+            /** Floors */
+            floors: number | null;
+            /** Id */
+            id: string;
+            /** Land Square Meters */
+            land_square_meters: number | null;
+            /** Latitude */
+            latitude: number | null;
+            listing_type: components["schemas"]["ListingType"] | null;
+            /** Location */
+            location: string | null;
+            /** Longitude */
+            longitude: number | null;
+            /** Parcel Info */
+            parcel_info: string | null;
+            /** Price */
+            price: string | null;
+            /** Property Type */
+            property_type: string | null;
+            /** Road Access */
+            road_access: boolean | null;
+            /** Rooms */
+            rooms: string | null;
+            /** Square Meters */
+            square_meters: number | null;
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Water */
+            water: boolean | null;
+            /** Website */
+            website: string | null;
+            /** Zoning */
+            zoning: string | null;
+        };
+        /** PropertySummary */
+        PropertySummary: {
+            category: components["schemas"]["PropertyCategory"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Currency */
+            currency: string | null;
+            /** Facts Verified At */
+            facts_verified_at: string | null;
+            /** Id */
+            id: string;
+            /** Location */
+            location: string | null;
+            /** Price */
+            price: string | null;
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** PropertyUpdate */
+        PropertyUpdate: {
+            /** Bathrooms */
+            bathrooms?: number | null;
+            /** Building Age */
+            building_age?: number | null;
+            /** Contact */
+            contact?: string | null;
+            /** Currency */
+            currency?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Electricity */
+            electricity?: boolean | null;
+            /** Facts Source */
+            facts_source?: string | null;
+            /** Features */
+            features?: string[] | null;
+            /** Floors */
+            floors?: number | null;
+            /** Land Square Meters */
+            land_square_meters?: number | null;
+            /** Latitude */
+            latitude?: number | null;
+            listing_type?: components["schemas"]["ListingType"] | null;
+            /** Location */
+            location?: string | null;
+            /** Longitude */
+            longitude?: number | null;
+            /** Mark Facts Verified */
+            mark_facts_verified?: boolean | null;
+            /** Parcel Info */
+            parcel_info?: string | null;
+            /** Price */
+            price?: number | string | null;
+            /** Property Type */
+            property_type?: string | null;
+            /** Road Access */
+            road_access?: boolean | null;
+            /** Rooms */
+            rooms?: string | null;
+            /** Square Meters */
+            square_meters?: number | null;
+            /** Title */
+            title?: string | null;
+            /** Water */
+            water?: boolean | null;
+            /** Website */
+            website?: string | null;
+            /** Zoning */
+            zoning?: string | null;
         };
         /** StorageStatus */
         StorageStatus: {
@@ -142,6 +1356,19 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -151,6 +1378,481 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    upload_asset_api_assets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_asset_api_assets_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_asset_api_assets__asset_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_asset_api_assets__asset_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_asset_content_api_assets__asset_id__content_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_characters_api_characters_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_CharacterSummary_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_character_api_characters_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_character_api_characters__character_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_character_api_characters__character_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_character_api_characters__character_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CharacterUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attach_asset_api_characters__character_id__assets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetLinkCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CharacterRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detach_asset_api_characters__character_id__assets__asset_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                character_id: string;
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_consents_api_consents_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ConsentRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_consent_api_consents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConsentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_consent_api_consents__consent_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                consent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_consent_api_consents__consent_id__revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                consent_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConsentRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_api_health_get: {
         parameters: {
             query?: never;
@@ -167,6 +1869,620 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    list_products_api_products_get: {
+        parameters: {
+            query?: {
+                q?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ProductSummary_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_product_api_products_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_product_api_products__product_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_product_api_products__product_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_product_api_products__product_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attach_asset_api_products__product_id__assets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetLinkCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detach_asset_api_products__product_id__assets__asset_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_projects_api_projects_get: {
+        parameters: {
+            query?: {
+                type?: components["schemas"]["ProjectType"] | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ProjectRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_project_api_projects_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_project_api_projects__project_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_project_api_projects__project_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_project_api_projects__project_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_properties_api_properties_get: {
+        parameters: {
+            query?: {
+                category?: components["schemas"]["PropertyCategory"] | null;
+                q?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_PropertySummary_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_property_api_properties_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PropertyCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_property_api_properties__property_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_property_api_properties__property_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_property_api_properties__property_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PropertyUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attach_asset_api_properties__property_id__assets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                property_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssetLinkCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PropertyRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detach_asset_api_properties__property_id__assets__asset_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                property_id: string;
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

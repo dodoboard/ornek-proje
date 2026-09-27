@@ -2,7 +2,7 @@
 
 Local-first AI content studio: consistent AI influencers, product ads, real-estate/land videos. FLUX.2 for images, a separate local video model for motion, FFmpeg for final composition. No paid cloud API is required at runtime.
 
-> Status: **Phase 1 — project skeleton.** Backend API foundation and the studio UI shell run; no generation features yet.
+> Status: **Phase 2 — database + API foundation.** CRUD for characters, products, properties/land, projects, consents and validated asset uploads. No generation features yet.
 > See `docs/PHASE0_VALIDATION.md` for verified integrations and open items, and `MODEL_LICENSES.md` before downloading any model.
 
 ## Layout
@@ -56,6 +56,35 @@ backend/.venv/bin/python -m pip install -r backend/requirements/dev.txt
 ```
 
 Open http://127.0.0.1:3000 (API: http://127.0.0.1:8000/docs). Both servers bind to localhost only.
+
+## Database
+
+SQLite at `data/studio.db` by default (`DATABASE_URL` to override). Schema is managed by Alembic; the API applies pending migrations on startup (`AUTO_MIGRATE=true`). Manual use, from `backend/` with the venv active:
+
+```bash
+alembic upgrade head        # apply migrations
+alembic check               # fail if models and migrations diverge
+alembic revision --autogenerate -m "describe change"   # after changing app/models
+```
+
+## API (Phase 2)
+
+Interactive docs: http://127.0.0.1:8000/docs. All errors use `{"error": {"code", "message"}}`.
+
+| Resource | Endpoints |
+|---|---|
+| Assets | `POST /api/assets` (multipart), `GET /api/assets/{id}`, `GET /api/assets/{id}/content`, `DELETE /api/assets/{id}` |
+| Characters | `GET/POST /api/characters`, `GET/PATCH/DELETE /api/characters/{id}`, `POST /api/characters/{id}/assets`, `DELETE /api/characters/{id}/assets/{asset_id}` |
+| Products | same shape under `/api/products` |
+| Properties / land | same shape under `/api/properties` (`?category=property|land`) |
+| Projects | `GET/POST /api/projects`, `GET/PATCH/DELETE /api/projects/{id}` |
+| Consents | `GET/POST /api/consents`, `GET /api/consents/{id}`, `POST /api/consents/{id}/revoke` |
+
+Data rules enforced server-side:
+
+- **Uploads:** JPEG/PNG/WEBP/MP4/MOV/WAV/MP3/M4A only, detected from file contents (not the name). Images are fully decoded with a pixel limit; video/audio are checked with `ffprobe`. SVG, GIF and anything else are rejected. Files are stored as `AST_<id>.<ext>`; the original name is kept only as metadata.
+- **Characters:** `adult_age` must be 18–120 (API and DB constraint). Descriptions that reference minors (EN/TR keyword guard) are rejected. `is_real_person=true` requires an active **face** consent record; revoking it blocks further edits and reference uploads.
+- **Products / properties:** price requires a currency; coordinates must be given as a pair; unknown facts stay `null`. `mark_facts_verified` stamps `facts_verified_at`; changing any fact later clears it.
 
 ## Checks
 

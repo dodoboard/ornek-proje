@@ -12,10 +12,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import __version__
 from app.api.errors import register_exception_handlers
 from app.api.middleware import RequestContextMiddleware
-from app.api.routers import health, system
+from app.api.routers import assets, characters, consents, health, products, projects, properties, system
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging
 from app.core.runtime import apply_process_env, ensure_data_dirs
+from app.db.migrations import upgrade_to_head
+from app.db.session import create_db_engine, create_session_factory
+from app.services.storage import StorageService
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +30,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     configure_logging(settings.log_level, settings.log_format)
     apply_process_env(settings)
 
+    assert settings.database_url is not None
+    engine = create_db_engine(settings.database_url)
+
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         ensure_data_dirs(settings)
+        if settings.auto_migrate:
+            upgrade_to_head(settings.database_url)  # type: ignore[arg-type]
         logger.info(
             "startup",
             extra={
@@ -39,10 +47,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             },
         )
         yield
+        engine.dispose()
         logger.info("shutdown")
 
     app = FastAPI(title=settings.app_name, version=__version__, lifespan=lifespan)
     app.state.settings = settings
+    app.state.engine = engine
+    app.state.session_factory = create_session_factory(engine)
+    app.state.storage = StorageService(settings.data_dir)
 
     app.add_middleware(
         CORSMiddleware,
@@ -55,6 +67,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(RequestContextMiddleware)
     register_exception_handlers(app)
 
-    app.include_router(health.router, prefix=API_PREFIX)
-    app.include_router(system.router, prefix=API_PREFIX)
+    for router in (
+        health.router,
+        system.router,
+        assets.router,
+        consents.router,
+        characters.router,
+        products.router,
+        properties.router,
+        projects.router,
+    ):
+        app.include_router(router, prefix=API_PREFIX)
     return app

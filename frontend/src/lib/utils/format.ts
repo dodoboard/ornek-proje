@@ -13,3 +13,9 @@ export function percent(part: number, total: number): number {
   if (!(total > 0) || !Number.isFinite(part)) return 0;
   return Math.min(100, Math.max(0, (part / total) * 100));
 }
+
+export function formatDateTime(iso: string, locale?: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString(locale, { dateStyle: "medium", timeStyle: "short" });
+}

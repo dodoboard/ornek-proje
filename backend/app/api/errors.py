@@ -8,9 +8,10 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.core.errors import AppError, DiskFullError, ErrorCode
+from app.core.errors import AppError, ConflictError, DatabaseError, DiskFullError, ErrorCode
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,14 @@ async def _http_error(request: Request, exc: Exception) -> JSONResponse:
     return _error(exc.status_code, code, message)
 
 
+async def _db_error(request: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, IntegrityError):
+        logger.info("integrity_error", extra={"path": request.url.path, "detail": str(exc.orig)})
+        return await _app_error(request, ConflictError("The change violates a data constraint."))
+    logger.exception("database_error", extra={"path": request.url.path})
+    return await _app_error(request, DatabaseError())
+
+
 async def _unhandled_error(request: Request, exc: Exception) -> JSONResponse:
     if isinstance(exc, OSError) and exc.errno == errno.ENOSPC:
         return await _app_error(request, DiskFullError())
@@ -61,4 +70,5 @@ def register_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(AppError, _app_error)
     app.add_exception_handler(RequestValidationError, _validation_error)
     app.add_exception_handler(StarletteHTTPException, _http_error)
+    app.add_exception_handler(SQLAlchemyError, _db_error)
     app.add_exception_handler(Exception, _unhandled_error)

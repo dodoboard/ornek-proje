@@ -1,7 +1,23 @@
 import type { components } from "./schema";
 
-export type HealthResponse = components["schemas"]["HealthResponse"];
-export type SystemResponse = components["schemas"]["SystemResponse"];
+type Schemas = components["schemas"];
+
+export type HealthResponse = Schemas["HealthResponse"];
+export type SystemResponse = Schemas["SystemResponse"];
+export type ProjectRead = Schemas["ProjectRead"];
+export type ProjectCreate = Schemas["ProjectCreate"];
+export type ProjectType = ProjectRead["type"];
+export type ProjectSettings = Schemas["ProjectSettings"];
+export type CharacterSummary = Schemas["CharacterSummary"];
+export type ProductSummary = Schemas["ProductSummary"];
+export type PropertySummary = Schemas["PropertySummary"];
+
+export interface Page<T> {
+  items: T[];
+  total: number;
+  limit: number;
+  offset: number;
+}
 
 export const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000").replace(/\/+$/, "");
 
@@ -43,6 +59,8 @@ export async function apiFetch<T>(path: string, init?: RequestInit, fetchImpl: t
     throw new ApiError("BACKEND_UNREACHABLE", "Cannot reach the local backend. Is it running?", 0);
   }
 
+  if (response.status === 204) return undefined as T;
+
   const body: unknown = await response.json().catch(() => null);
   if (!response.ok) {
     if (isErrorEnvelope(body)) throw new ApiError(body.error.code, body.error.message, response.status);
@@ -51,7 +69,41 @@ export async function apiFetch<T>(path: string, init?: RequestInit, fetchImpl: t
   return body as T;
 }
 
+function jsonInit(method: string, body: unknown): RequestInit {
+  return { method, body: JSON.stringify(body), headers: { "Content-Type": "application/json" } };
+}
+
+function query(params: Record<string, string | number | undefined>): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== "") search.set(key, String(value));
+  }
+  const text = search.toString();
+  return text ? `?${text}` : "";
+}
+
+export interface ListParams {
+  limit?: number;
+  offset?: number;
+}
+
 export const api = {
   health: () => apiFetch<HealthResponse>("/api/health"),
   system: () => apiFetch<SystemResponse>("/api/system"),
+
+  projects: {
+    list: (params: ListParams & { type?: ProjectType } = {}) =>
+      apiFetch<Page<ProjectRead>>(`/api/projects${query({ ...params })}`),
+    create: (payload: ProjectCreate) => apiFetch<ProjectRead>("/api/projects", jsonInit("POST", payload)),
+    remove: (id: string) => apiFetch<void>(`/api/projects/${encodeURIComponent(id)}`, { method: "DELETE" }),
+  },
+  characters: {
+    list: (params: ListParams = {}) => apiFetch<Page<CharacterSummary>>(`/api/characters${query({ ...params })}`),
+  },
+  products: {
+    list: (params: ListParams = {}) => apiFetch<Page<ProductSummary>>(`/api/products${query({ ...params })}`),
+  },
+  properties: {
+    list: (params: ListParams = {}) => apiFetch<Page<PropertySummary>>(`/api/properties${query({ ...params })}`),
+  },
 };

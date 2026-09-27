@@ -89,6 +89,13 @@ class Settings(BaseSettings):
     ffmpeg_path: Path | None = None
     ffprobe_path: Path | None = None
 
+    # Upload limits
+    max_image_upload_mb: int = Field(default=25, ge=1)
+    max_video_upload_mb: int = Field(default=1024, ge=1)
+    max_audio_upload_mb: int = Field(default=100, ge=1)
+    max_image_pixels: int = Field(default=40_000_000, ge=1)
+    auto_migrate: bool = True
+
     # Fake providers produce placeholder output for UI/backend development without a GPU.
     enable_fake_providers: bool = False
 
