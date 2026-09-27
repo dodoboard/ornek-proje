@@ -85,7 +85,7 @@ Interactive docs: http://127.0.0.1:8000/docs. All errors use `{"error": {"code",
 | System | `GET /api/health`, `GET /api/system` (incl. worker status and runtime), `POST /api/system/diagnostics` |
 | Models | `GET /api/models` |
 | Settings | `GET /api/settings`, `PATCH /api/settings` (performance profile, default models, model paths, FFmpeg paths, offline mode, watermark, defaults) |
-| Generation | `POST /api/generate/image` (→ job), `GET /api/generations`, `GET /api/generations/{id}`, `GET /api/assets/{id}/thumbnail` |
+| Generation | `POST /api/generate/image`, `POST /api/generate/image-edit` (→ job), `GET /api/generations` (`?kind=image,image_edit`), `GET /api/generations/{id}`, `GET /api/assets/{id}/thumbnail` |
 
 Data rules enforced server-side:
 
@@ -161,6 +161,23 @@ Influencers → create a character (adult age 18–120 is enforced; a real perso
 API: `GET/PATCH /api/characters/{id}/bible`, `POST /api/characters/{id}/prompt-preview`, `POST /api/characters/{id}/generate` (`purpose`: candidates | front | three_quarter | full_body | scene), `PUT /api/characters/{id}/views/{canonical|front|three_quarter|full_body}`.
 
 Rules: views and scenes need a canonical portrait first; an image generated for one character cannot become another character's view; scene text and prompts referencing minors are rejected; revoking a real person's consent blocks further generation.
+
+## Image editing (Phase 7)
+
+Image Studio tabs: **Generate | Edit | Inpaint | Outpaint**. A tab appears only if a ready model supports it (FLUX.2 [klein] via `Flux2KleinInpaintPipeline`; FLUX.2 [dev] has no inpaint pipeline in diffusers, so it only offers Generate/Edit).
+
+| Mode | What happens |
+|---|---|
+| Edit | Instruction edit: the source is sent as the first FLUX.2 reference image (it takes one reference slot) and the result has the source's size. The whole image may change. |
+| Inpaint | Paint the area to change on the source (brush / erase / clear). The mask is exported as a white-on-black PNG at source resolution. |
+| Outpaint | Extend any side by 0–1024 px (UI step 64). The new area plus a 16 px overlap band is generated; the preview shows the final size. |
+
+- **Pixel preservation:** for inpaint/outpaint the result is composited back onto the original with the (feathered) mask, so pixels outside the mask/overlap are **byte-identical** to the source (tested). `feather` (0–64 px) only softens the inside edge of the mask.
+- `strength` (0.05–1; default inpaint 0.9, outpaint 1.0) controls how much of the masked area is re-noised; fewer denoising steps run below 1.
+- Sources are cropped down to a multiple of 16 (FLUX.2 requirement). Result size must stay within the model's `min_size`/`max_size`; the API rejects violations before queueing.
+- Outputs are `image_edit` generations with disclosure fields `ai_edited`, `edit_mode`, `edited_asset_id`; the gallery labels them "AI edited".
+
+Unverified until run on your GPU: inpaint quality/speed with klein 4B, the best `strength` per use.
 
 ## Checks
 

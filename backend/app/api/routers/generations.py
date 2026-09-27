@@ -16,7 +16,9 @@ router = APIRouter(prefix="/generations", tags=["generations"])
 def list_generations(
     session: SessionDep,
     page: PaginationDep,
-    kind: Annotated[str | None, Query(max_length=20)] = None,
+    kind: Annotated[
+        str | None, Query(max_length=60, description="Comma-separated kinds, e.g. image,image_edit")
+    ] = None,
     project_id: Annotated[str | None, Query(max_length=40)] = None,
     character_id: Annotated[str | None, Query(max_length=40)] = None,
 ) -> Page[GenerationRead]:

@@ -24,6 +24,7 @@ export type PreferencesUpdate = Schemas["PreferencesUpdate"];
 export type PerformanceProfile = Schemas["PerformanceProfile"];
 export type AssetRead = Schemas["AssetRead"];
 export type ImageGenerateRequest = Schemas["ImageGenerateRequest"];
+export type ImageEditRequest = Schemas["ImageEditRequest"];
 export type GenerationRead = Schemas["GenerationRead"];
 export type CharacterRead = Schemas["CharacterRead"];
 export type CharacterCreate = Schemas["CharacterCreate"];
@@ -128,6 +129,7 @@ export const api = {
   },
   generate: {
     image: (body: ImageGenerateRequest) => apiFetch<JobRead>("/api/generate/image", jsonInit("POST", body)),
+    imageEdit: (body: ImageEditRequest) => apiFetch<JobRead>("/api/generate/image-edit", jsonInit("POST", body)),
   },
   generations: {
     list: (params: ListParams & { kind?: string; project_id?: string; character_id?: string } = {}) =>

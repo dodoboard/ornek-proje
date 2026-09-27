@@ -1576,6 +1576,179 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "ImageEditRequest": {
+        "additionalProperties": false,
+        "description": "Edit an existing image: instruction edit, masked inpaint or outpaint.",
+        "properties": {
+          "character_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Id"
+          },
+          "feather": {
+            "default": 8,
+            "description": "Soft edge (px) when blending into the original",
+            "maximum": 64.0,
+            "minimum": 0.0,
+            "title": "Feather",
+            "type": "integer"
+          },
+          "guidance_scale": {
+            "anyOf": [
+              {
+                "maximum": 30.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guidance Scale"
+          },
+          "mask_asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mask Asset Id"
+          },
+          "mode": {
+            "enum": [
+              "edit",
+              "inpaint",
+              "outpaint"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "model_key": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Key"
+          },
+          "num_images": {
+            "default": 1,
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Num Images",
+            "type": "integer"
+          },
+          "padding": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Padding"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "prompt": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Prompt",
+            "type": "string"
+          },
+          "reference_asset_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Reference Asset Ids",
+            "type": "array"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "maximum": 4294967279.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "source_asset_id": {
+            "title": "Source Asset Id",
+            "type": "string"
+          },
+          "steps": {
+            "anyOf": [
+              {
+                "maximum": 150.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Steps"
+          },
+          "strength": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.05,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strength"
+          },
+          "watermark": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Watermark"
+          }
+        },
+        "required": [
+          "mode",
+          "source_asset_id",
+          "prompt"
+        ],
+        "title": "ImageEditRequest",
+        "type": "object"
+      },
       "ImageGenerateRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1962,6 +2135,41 @@
           "kinds"
         ],
         "title": "ModelsResponse",
+        "type": "object"
+      },
+      "Padding": {
+        "additionalProperties": false,
+        "properties": {
+          "bottom": {
+            "default": 0,
+            "maximum": 1024.0,
+            "minimum": 0.0,
+            "title": "Bottom",
+            "type": "integer"
+          },
+          "left": {
+            "default": 0,
+            "maximum": 1024.0,
+            "minimum": 0.0,
+            "title": "Left",
+            "type": "integer"
+          },
+          "right": {
+            "default": 0,
+            "maximum": 1024.0,
+            "minimum": 0.0,
+            "title": "Right",
+            "type": "integer"
+          },
+          "top": {
+            "default": 0,
+            "maximum": 1024.0,
+            "minimum": 0.0,
+            "title": "Top",
+            "type": "integer"
+          }
+        },
+        "title": "Padding",
         "type": "object"
       },
       "Page_CharacterSummary_": {
@@ -5565,24 +5773,68 @@
         ]
       }
     },
+    "/api/generate/image-edit": {
+      "post": {
+        "description": "Instruction edit, inpaint (mask: white = change) or outpaint an existing image asset.",
+        "operationId": "edit_image_api_generate_image_edit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageEditRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Edit Image",
+        "tags": [
+          "generate"
+        ]
+      }
+    },
     "/api/generations": {
       "get": {
         "operationId": "list_generations_api_generations_get",
         "parameters": [
           {
+            "description": "Comma-separated kinds, e.g. image,image_edit",
             "in": "query",
             "name": "kind",
             "required": false,
             "schema": {
               "anyOf": [
                 {
-                  "maxLength": 20,
+                  "maxLength": 60,
                   "type": "string"
                 },
                 {
                   "type": "null"
                 }
               ],
+              "description": "Comma-separated kinds, e.g. image,image_edit",
               "title": "Kind"
             }
           },

@@ -127,6 +127,19 @@ def test_instruction_edit_uses_source_as_first_reference(dev_client: TestClient)
     assert generation["params"]["strength"] is None
 
 
+def test_generation_listing_filters_multiple_kinds(dev_client: TestClient) -> None:
+    source_id = _upload(dev_client, _noise_png((256, 256), seed=5))
+    edit = _run(dev_client, {"mode": "edit", "source_asset_id": source_id, "prompt": "add snow", "steps": 1})
+
+    def ids(kind: str) -> list[str]:
+        items = dev_client.get("/api/generations", params={"kind": kind}).json()["items"]
+        return [g["id"] for g in items]
+
+    assert ids("image_edit") == [edit["id"]]
+    assert ids("image") == []
+    assert ids("image,image_edit") == [edit["id"]]
+
+
 @pytest.mark.parametrize(
     ("body", "status", "code"),
     [

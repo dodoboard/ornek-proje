@@ -15,6 +15,7 @@ export function GenerationGallery({ generations }: { generations: GenerationRead
     <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
       {items.map(({ generation, asset }) => {
         const placeholder = asset.metadata?.dev_placeholder === true;
+        const edited = generation.kind === "image_edit";
         const seed = typeof asset.metadata?.seed === "number" ? asset.metadata.seed : null;
         return (
           <li key={asset.id} className="overflow-hidden rounded-md border border-border bg-surface-raised">
@@ -29,7 +30,9 @@ export function GenerationGallery({ generations }: { generations: GenerationRead
             </a>
             <div className="space-y-1 p-2">
               <div className="flex items-center justify-between gap-2">
-                <Badge tone={placeholder ? "warning" : "accent"}>{placeholder ? "DEV PLACEHOLDER" : "AI generated"}</Badge>
+                <Badge tone={placeholder ? "warning" : "accent"}>
+                  {placeholder ? "DEV PLACEHOLDER" : edited ? "AI edited" : "AI generated"}
+                </Badge>
                 <a
                   href={api.assets.contentUrl(asset.id)}
                   download
@@ -40,6 +43,7 @@ export function GenerationGallery({ generations }: { generations: GenerationRead
                 </a>
               </div>
               <p className="truncate text-xs text-muted" title={generation.model_key}>
+                {edited && typeof generation.params?.mode === "string" ? `${generation.params.mode} · ` : ""}
                 {generation.model_key}
                 {seed !== null ? ` · seed ${seed}` : ""}
               </p>

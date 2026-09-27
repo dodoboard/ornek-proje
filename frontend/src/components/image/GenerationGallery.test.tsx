@@ -55,6 +55,19 @@ describe("GenerationGallery", () => {
     );
   });
 
+  it("marks edits as AI edited with their mode", () => {
+    const edit: GenerationRead = {
+      ...GENERATION,
+      id: "GEN_2",
+      kind: "image_edit",
+      params: { prompt: "red jacket", mode: "inpaint" },
+      assets: [asset("AST_3", { seed: 7 })],
+    };
+    render(<GenerationGallery generations={[edit]} />);
+    expect(screen.getByText("AI edited")).toBeInTheDocument();
+    expect(screen.getByText("inpaint · flux2_klein_4b · seed 7")).toBeInTheDocument();
+  });
+
   it("shows an empty state", () => {
     render(<GenerationGallery generations={[]} />);
     expect(screen.getByText("No images yet")).toBeInTheDocument();

@@ -33,8 +33,9 @@ def list_generations(
     offset: int,
 ) -> tuple[list[Generation], int]:
     stmt = select(Generation).order_by(Generation.created_at.desc(), Generation.id.desc())
-    if kind:
-        stmt = stmt.where(Generation.kind == kind)
+    kinds = [k for k in (kind or "").split(",") if k]
+    if kinds:
+        stmt = stmt.where(Generation.kind.in_(kinds))
     if project_id:
         stmt = stmt.where(Generation.project_id == project_id)
     if character_id:

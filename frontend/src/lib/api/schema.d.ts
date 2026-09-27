@@ -294,6 +294,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/generate/image-edit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Edit Image
+         * @description Instruction edit, inpaint (mask: white = change) or outpaint an existing image asset.
+         */
+        post: operations["edit_image_api_generate_image_edit_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/generations": {
         parameters: {
             query?: never;
@@ -1237,6 +1257,53 @@ export interface components {
             /** Version */
             version: string;
         };
+        /**
+         * ImageEditRequest
+         * @description Edit an existing image: instruction edit, masked inpaint or outpaint.
+         */
+        ImageEditRequest: {
+            /** Character Id */
+            character_id?: string | null;
+            /**
+             * Feather
+             * @description Soft edge (px) when blending into the original
+             * @default 8
+             */
+            feather?: number;
+            /** Guidance Scale */
+            guidance_scale?: number | null;
+            /** Mask Asset Id */
+            mask_asset_id?: string | null;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "edit" | "inpaint" | "outpaint";
+            /** Model Key */
+            model_key?: string | null;
+            /**
+             * Num Images
+             * @default 1
+             */
+            num_images?: number;
+            padding?: components["schemas"]["Padding"] | null;
+            /** Project Id */
+            project_id?: string | null;
+            /** Prompt */
+            prompt: string;
+            /** Reference Asset Ids */
+            reference_asset_ids?: string[];
+            /** Seed */
+            seed?: number | null;
+            /** Source Asset Id */
+            source_asset_id: string;
+            /** Steps */
+            steps?: number | null;
+            /** Strength */
+            strength?: number | null;
+            /** Watermark */
+            watermark?: boolean | null;
+        };
         /** ImageGenerateRequest */
         ImageGenerateRequest: {
             /** Character Id */
@@ -1352,6 +1419,29 @@ export interface components {
             fake_providers_enabled: boolean;
             /** Kinds */
             kinds: components["schemas"]["KindModels"][];
+        };
+        /** Padding */
+        Padding: {
+            /**
+             * Bottom
+             * @default 0
+             */
+            bottom?: number;
+            /**
+             * Left
+             * @default 0
+             */
+            left?: number;
+            /**
+             * Right
+             * @default 0
+             */
+            right?: number;
+            /**
+             * Top
+             * @default 0
+             */
+            top?: number;
         };
         /** Page[CharacterSummary] */
         Page_CharacterSummary_: {
@@ -2806,9 +2896,43 @@ export interface operations {
             };
         };
     };
+    edit_image_api_generate_image_edit_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImageEditRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_generations_api_generations_get: {
         parameters: {
             query?: {
+                /** @description Comma-separated kinds, e.g. image,image_edit */
                 kind?: string | null;
                 project_id?: string | null;
                 character_id?: string | null;
