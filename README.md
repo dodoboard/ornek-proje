@@ -179,6 +179,27 @@ Image Studio tabs: **Generate | Edit | Inpaint | Outpaint**. A tab appears only 
 
 Unverified until run on your GPU: inpaint quality/speed with klein 4B, the best `strength` per use.
 
+## Product Studio (Phase 8)
+
+Product Ads → create a product (name/brand/description are your verified facts) → upload a photo → **Cut out product** → **Scene**.
+
+**How product fidelity is guaranteed:** the product is never generated. Its cutout keeps the photo's exact RGB pixels (only the alpha channel comes from segmentation); the scene is a background plus that cutout composited on top. After rendering, every protected product pixel is compared with the cutout — if a single one differs, the job **fails** instead of saving. Each output stores this report (`params.preservation`) and the disclosure `product_pixels: original_photo`.
+
+| Step | Details |
+|---|---|
+| Cutout | `rembg` ONNX sessions: `birefnet_general` (default), `birefnet_general_lite`, `isnet_general_use` — or `color_key` (classical, no AI, plain backgrounds only; keeps white labels inside the product), or your own mask. Near-opaque alpha (≥240) is snapped to 255 so the interior is exact. |
+| Placement | Horizontal centre, standing line (bottom edge) and height as a fraction of the image; the product is clamped into the frame. **Original size** = no resampling (pixel-identical to the photo). Otherwise it is scaled with Lanczos and the report says `scaled`/`upscaled` — upscaling makes small text soft. |
+| Background | FLUX.2 text-to-image ("empty surface … where a product will be placed", brand names are never put into the prompt) or your own photo (no AI involved → the output is marked `generated_with_ai: false`). |
+| Contact shadow | Blurred ellipse under the product; changes background pixels only. |
+| Blend edges with AI (optional) | FLUX.2 inpaint on a 2–16 px ring around the silhouette only; the product interior inside the ring is copied back and verified. |
+| Watermark | If enabled, the "AI generated" label is placed in a corner that does not cover the product, then verified. |
+
+Install segmentation (worker machine): `pip install -r backend/requirements/segmentation.txt` (CPU `onnxruntime`; for CUDA use `onnxruntime-gpu==1.30.0` with matching CUDA/cuDNN libraries), then `cd backend && python scripts/download_models.py segmentation:birefnet_general`. Weights come from the rembg GitHub releases and are stored in `MODELS_DIR/rembg` (`U2NET_HOME` overrides).
+
+API: `POST /api/products/{id}/cutout`, `POST /api/products/{id}/scene`, `GET /api/generations?product_id=…&kind=product_scene`.
+
+Limits: an influencer *holding* the product is not composited in this phase (the product would have to be AI-rendered — see H2 in the plan); relighting of the product itself is intentionally not done because it would change its pixels. Verified here: rembg 2.0.85 API, BiRefNet-lite end-to-end on CPU (~40 s per 1024² image in this container). Unverified until your machine: CUDA speed of onnxruntime-gpu on RTX 50-series.
+
 ## Checks
 
 ```bash

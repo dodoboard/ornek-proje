@@ -511,6 +511,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/products/{product_id}/cutout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Cutout
+         * @description Separate the product from its photo. The photo is attached to the product if it is not yet.
+         */
+        post: operations["create_cutout_api_products__product_id__cutout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/{product_id}/scene": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Scene
+         * @description Background + original product pixels (+ optional shadow and AI edge blending), verified.
+         */
+        post: operations["create_scene_api_products__product_id__scene_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/projects": {
         parameters: {
             query?: never;
@@ -1194,6 +1234,8 @@ export interface components {
             params: {
                 [key: string]: unknown;
             };
+            /** Product Id */
+            product_id?: string | null;
             /** Project Id */
             project_id: string | null;
             /** Provider */
@@ -1246,6 +1288,25 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** HarmonizeIn */
+        HarmonizeIn: {
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled?: boolean;
+            /**
+             * Ring Px
+             * @description Edge band (px) the model may repaint.
+             * @default 6
+             */
+            ring_px?: number;
+            /**
+             * Strength
+             * @default 0.35
+             */
+            strength?: number;
         };
         /** HealthResponse */
         HealthResponse: {
@@ -1525,6 +1586,33 @@ export interface components {
          * @enum {string}
          */
         PerformanceProfile: "performance" | "balanced" | "low_vram";
+        /** PlacementIn */
+        PlacementIn: {
+            /**
+             * Height Ratio
+             * @description Product height / image height.
+             * @default 0.5
+             */
+            height_ratio?: number;
+            /**
+             * Native Scale
+             * @description Keep the cutout's pixel size (no resampling).
+             * @default false
+             */
+            native_scale?: boolean;
+            /**
+             * X
+             * @description Horizontal centre of the product (0..1).
+             * @default 0.5
+             */
+            x?: number;
+            /**
+             * Y
+             * @description Bottom edge of the product (0..1).
+             * @default 0.85
+             */
+            y?: number;
+        };
         /** PreferencesRead */
         PreferencesRead: {
             /**
@@ -1640,6 +1728,24 @@ export interface components {
             /** Website */
             website?: string | null;
         };
+        /** ProductCutoutRequest */
+        ProductCutoutRequest: {
+            /**
+             * Mask Asset Id
+             * @description Optional hand-made mask (white = product); skips segmentation.
+             */
+            mask_asset_id?: string | null;
+            /**
+             * Model Key
+             * @description Segmentation model.
+             */
+            model_key?: string | null;
+            /**
+             * Source Asset Id
+             * @description Product photo (attached to the product as product_photo).
+             */
+            source_asset_id: string;
+        };
         /** ProductRead */
         ProductRead: {
             /** Assets */
@@ -1672,6 +1778,67 @@ export interface components {
             updated_at: string;
             /** Website */
             website: string | null;
+        };
+        /** ProductSceneRequest */
+        ProductSceneRequest: {
+            /**
+             * Background Asset Id
+             * @description Use this photo as the background instead of generating one.
+             */
+            background_asset_id?: string | null;
+            /**
+             * Character Id
+             * @description Influencer shown in the scene (via reference images); consent is checked.
+             */
+            character_id?: string | null;
+            /** Cutout Asset Id */
+            cutout_asset_id: string;
+            /** Guidance Scale */
+            guidance_scale?: number | null;
+            harmonize?: components["schemas"]["HarmonizeIn"];
+            /**
+             * Height
+             * @default 1024
+             */
+            height?: number;
+            /**
+             * Model Key
+             * @description Image model (background/edges).
+             */
+            model_key?: string | null;
+            /**
+             * Num Images
+             * @default 1
+             */
+            num_images?: number;
+            placement?: components["schemas"]["PlacementIn"];
+            /** Project Id */
+            project_id?: string | null;
+            /** Reference Asset Ids */
+            reference_asset_ids?: string[];
+            /** Scene */
+            scene: string;
+            /** Seed */
+            seed?: number | null;
+            /**
+             * Shadow
+             * @default true
+             */
+            shadow?: boolean;
+            /**
+             * Shadow Opacity
+             * @default 0.45
+             */
+            shadow_opacity?: number;
+            /** Steps */
+            steps?: number | null;
+            /** Watermark */
+            watermark?: boolean | null;
+            /**
+             * Width
+             * @default 1024
+             */
+            width?: number;
         };
         /** ProductSummary */
         ProductSummary: {
@@ -2936,6 +3103,7 @@ export interface operations {
                 kind?: string | null;
                 project_id?: string | null;
                 character_id?: string | null;
+                product_id?: string | null;
                 limit?: number;
                 offset?: number;
             };
@@ -3379,6 +3547,76 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_cutout_api_products__product_id__cutout_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductCutoutRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_scene_api_products__product_id__scene_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                product_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProductSceneRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobRead"];
+                };
             };
             /** @description Validation Error */
             422: {

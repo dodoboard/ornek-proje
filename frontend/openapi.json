@@ -1414,6 +1414,17 @@
             "title": "Params",
             "type": "object"
           },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
           "project_id": {
             "anyOf": [
               {
@@ -1555,6 +1566,33 @@
           }
         },
         "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HarmonizeIn": {
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "ring_px": {
+            "default": 6,
+            "description": "Edge band (px) the model may repaint.",
+            "maximum": 16.0,
+            "minimum": 2.0,
+            "title": "Ring Px",
+            "type": "integer"
+          },
+          "strength": {
+            "default": 0.35,
+            "maximum": 0.8,
+            "minimum": 0.1,
+            "title": "Strength",
+            "type": "number"
+          }
+        },
+        "title": "HarmonizeIn",
         "type": "object"
       },
       "HealthResponse": {
@@ -2398,6 +2436,43 @@
         "title": "PerformanceProfile",
         "type": "string"
       },
+      "PlacementIn": {
+        "additionalProperties": false,
+        "properties": {
+          "height_ratio": {
+            "default": 0.5,
+            "description": "Product height / image height.",
+            "maximum": 1.0,
+            "minimum": 0.05,
+            "title": "Height Ratio",
+            "type": "number"
+          },
+          "native_scale": {
+            "default": false,
+            "description": "Keep the cutout's pixel size (no resampling).",
+            "title": "Native Scale",
+            "type": "boolean"
+          },
+          "x": {
+            "default": 0.5,
+            "description": "Horizontal centre of the product (0..1).",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "default": 0.85,
+            "description": "Bottom edge of the product (0..1).",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "title": "PlacementIn",
+        "type": "object"
+      },
       "PreferencesRead": {
         "properties": {
           "ai_watermark": {
@@ -2718,6 +2793,46 @@
         "title": "ProductCreate",
         "type": "object"
       },
+      "ProductCutoutRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "mask_asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional hand-made mask (white = product); skips segmentation.",
+            "title": "Mask Asset Id"
+          },
+          "model_key": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Segmentation model.",
+            "title": "Model Key"
+          },
+          "source_asset_id": {
+            "description": "Product photo (attached to the product as product_photo).",
+            "title": "Source Asset Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_asset_id"
+        ],
+        "title": "ProductCutoutRequest",
+        "type": "object"
+      },
       "ProductRead": {
         "properties": {
           "assets": {
@@ -2814,6 +2929,172 @@
           "assets"
         ],
         "title": "ProductRead",
+        "type": "object"
+      },
+      "ProductSceneRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "background_asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Use this photo as the background instead of generating one.",
+            "title": "Background Asset Id"
+          },
+          "character_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Influencer shown in the scene (via reference images); consent is checked.",
+            "title": "Character Id"
+          },
+          "cutout_asset_id": {
+            "title": "Cutout Asset Id",
+            "type": "string"
+          },
+          "guidance_scale": {
+            "anyOf": [
+              {
+                "maximum": 30.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guidance Scale"
+          },
+          "harmonize": {
+            "$ref": "#/components/schemas/HarmonizeIn"
+          },
+          "height": {
+            "default": 1024,
+            "maximum": 2048.0,
+            "minimum": 256.0,
+            "title": "Height",
+            "type": "integer"
+          },
+          "model_key": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Image model (background/edges).",
+            "title": "Model Key"
+          },
+          "num_images": {
+            "default": 1,
+            "maximum": 4.0,
+            "minimum": 1.0,
+            "title": "Num Images",
+            "type": "integer"
+          },
+          "placement": {
+            "$ref": "#/components/schemas/PlacementIn"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "reference_asset_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Reference Asset Ids",
+            "type": "array"
+          },
+          "scene": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Scene",
+            "type": "string"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "maximum": 4294967279.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "shadow": {
+            "default": true,
+            "title": "Shadow",
+            "type": "boolean"
+          },
+          "shadow_opacity": {
+            "default": 0.45,
+            "maximum": 0.9,
+            "minimum": 0.0,
+            "title": "Shadow Opacity",
+            "type": "number"
+          },
+          "steps": {
+            "anyOf": [
+              {
+                "maximum": 150.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Steps"
+          },
+          "watermark": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Watermark"
+          },
+          "width": {
+            "default": 1024,
+            "maximum": 2048.0,
+            "minimum": 256.0,
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "cutout_asset_id",
+          "scene"
+        ],
+        "title": "ProductSceneRequest",
         "type": "object"
       },
       "ProductSummary": {
@@ -5874,6 +6155,23 @@
           },
           {
             "in": "query",
+            "name": "product_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 40,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Product Id"
+            }
+          },
+          {
+            "in": "query",
             "name": "limit",
             "required": false,
             "schema": {
@@ -6585,6 +6883,112 @@
         "summary": "Detach Asset",
         "tags": [
           "products"
+        ]
+      }
+    },
+    "/api/products/{product_id}/cutout": {
+      "post": {
+        "description": "Separate the product from its photo. The photo is attached to the product if it is not yet.",
+        "operationId": "create_cutout_api_products__product_id__cutout_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "title": "Product Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductCutoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Cutout",
+        "tags": [
+          "product-studio"
+        ]
+      }
+    },
+    "/api/products/{product_id}/scene": {
+      "post": {
+        "description": "Background + original product pixels (+ optional shadow and AI edge blending), verified.",
+        "operationId": "create_scene_api_products__product_id__scene_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "product_id",
+            "required": true,
+            "schema": {
+              "title": "Product Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductSceneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Scene",
+        "tags": [
+          "product-studio"
         ]
       }
     },

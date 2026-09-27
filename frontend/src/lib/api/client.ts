@@ -10,6 +10,11 @@ export type ProjectType = ProjectRead["type"];
 export type ProjectSettings = Schemas["ProjectSettings"];
 export type CharacterSummary = Schemas["CharacterSummary"];
 export type ProductSummary = Schemas["ProductSummary"];
+export type ProductRead = Schemas["ProductRead"];
+export type ProductCreate = Schemas["ProductCreate"];
+export type ProductCutoutRequest = Schemas["ProductCutoutRequest"];
+export type ProductSceneRequest = Schemas["ProductSceneRequest"];
+export type AssetLinkRead = Schemas["AssetLinkRead"];
 export type PropertySummary = Schemas["PropertySummary"];
 export type JobRead = Schemas["JobRead"];
 export type JobStatus = JobRead["status"];
@@ -132,7 +137,9 @@ export const api = {
     imageEdit: (body: ImageEditRequest) => apiFetch<JobRead>("/api/generate/image-edit", jsonInit("POST", body)),
   },
   generations: {
-    list: (params: ListParams & { kind?: string; project_id?: string; character_id?: string } = {}) =>
+    list: (
+      params: ListParams & { kind?: string; project_id?: string; character_id?: string; product_id?: string } = {},
+    ) =>
       apiFetch<Page<GenerationRead>>(`/api/generations${query({ ...params })}`),
     get: (id: string) => apiFetch<GenerationRead>(`/api/generations/${encodeURIComponent(id)}`),
   },
@@ -193,6 +200,15 @@ export const api = {
   },
   products: {
     list: (params: ListParams = {}) => apiFetch<Page<ProductSummary>>(`/api/products${query({ ...params })}`),
+    get: (id: string) => apiFetch<ProductRead>(`/api/products/${encodeURIComponent(id)}`),
+    create: (body: ProductCreate) => apiFetch<ProductRead>("/api/products", jsonInit("POST", body)),
+    remove: (id: string) => apiFetch<void>(`/api/products/${encodeURIComponent(id)}`, { method: "DELETE" }),
+    attachAsset: (id: string, assetId: string, role: string) =>
+      apiFetch<ProductRead>(`/api/products/${encodeURIComponent(id)}/assets`, jsonInit("POST", { asset_id: assetId, role })),
+    cutout: (id: string, body: ProductCutoutRequest) =>
+      apiFetch<JobRead>(`/api/products/${encodeURIComponent(id)}/cutout`, jsonInit("POST", body)),
+    scene: (id: string, body: ProductSceneRequest) =>
+      apiFetch<JobRead>(`/api/products/${encodeURIComponent(id)}/scene`, jsonInit("POST", body)),
   },
   properties: {
     list: (params: ListParams = {}) => apiFetch<Page<PropertySummary>>(`/api/properties${query({ ...params })}`),

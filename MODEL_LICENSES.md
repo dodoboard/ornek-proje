@@ -22,7 +22,10 @@ This project is configured for **personal / research use**. Several default mode
 | ASR | faster-whisper | MIT — **verified** from PyPI | yes (code) | github.com/SYSTRAN/faster-whisper |
 | ASR | Whisper weights | MIT | check | github.com/openai/whisper |
 | Segmentation | BiRefNet | MIT | check | huggingface.co/ZhengPeng7/BiRefNet |
-| Segmentation | rembg | MIT — **verified** from PyPI | model-dependent | github.com/danielgatis/rembg |
+| Segmentation | rembg 2.0.85 (code) | MIT — **verified** from PyPI metadata | model-dependent | github.com/danielgatis/rembg |
+| Segmentation | BiRefNet ONNX exports used via rembg (`birefnet-general`, `birefnet-general-lite`) | MIT (upstream BiRefNet) — unverified for the ONNX re-export | check | github.com/danielgatis/rembg/releases |
+| Segmentation | ISNet `isnet-general-use` via rembg | Apache-2.0 (DIS) — unverified | check | github.com/xuebinqin/DIS |
+| Segmentation | `bria-rmbg` (rembg's own default; **not used** by this project) | BRIA RMBG-2.0: non-commercial (CC BY-NC 4.0) — unverified | no | huggingface.co/briaai/RMBG-2.0 |
 | Upscale | Real-ESRGAN weights | BSD-3-Clause | check | github.com/xinntao/Real-ESRGAN |
 | Upscale | spandrel | MIT — **verified** from PyPI | yes (code) | github.com/chaiNNer-org/spandrel |
 | Face score (optional) | InsightFace models | non-commercial | no | github.com/deepinsight/insightface |
