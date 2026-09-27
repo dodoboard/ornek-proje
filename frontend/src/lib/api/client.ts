@@ -15,6 +15,12 @@ export type ProductCreate = Schemas["ProductCreate"];
 export type ProductCutoutRequest = Schemas["ProductCutoutRequest"];
 export type ProductSceneRequest = Schemas["ProductSceneRequest"];
 export type AssetLinkRead = Schemas["AssetLinkRead"];
+export type ScriptGenerateRequest = Schemas["ScriptGenerateRequest"];
+export type ScriptRead = Schemas["ScriptRead"];
+export type StoryboardRead = Schemas["StoryboardRead"];
+export type ShotRead = Schemas["ShotRead"];
+export type ShotUpdate = Schemas["ShotUpdate"];
+export type ShotCreate = Schemas["ShotCreate"];
 export type PropertySummary = Schemas["PropertySummary"];
 export type JobRead = Schemas["JobRead"];
 export type JobStatus = JobRead["status"];
@@ -197,6 +203,23 @@ export const api = {
         `/api/characters/${encodeURIComponent(id)}/views/${role}`,
         jsonInit("PUT", { asset_id: assetId }),
       ),
+  },
+  storyboards: {
+    generateScript: (projectId: string, body: ScriptGenerateRequest) =>
+      apiFetch<JobRead>(`/api/projects/${encodeURIComponent(projectId)}/script`, jsonInit("POST", body)),
+    scripts: (projectId: string) => apiFetch<ScriptRead[]>(`/api/projects/${encodeURIComponent(projectId)}/scripts`),
+    latest: (projectId: string) =>
+      apiFetch<StoryboardRead>(`/api/projects/${encodeURIComponent(projectId)}/storyboard`),
+    addShot: (storyboardId: string, body: ShotCreate) =>
+      apiFetch<StoryboardRead>(`/api/storyboards/${encodeURIComponent(storyboardId)}/shots`, jsonInit("POST", body)),
+    reorder: (storyboardId: string, shotIds: string[]) =>
+      apiFetch<StoryboardRead>(
+        `/api/storyboards/${encodeURIComponent(storyboardId)}/order`,
+        jsonInit("PUT", { shot_ids: shotIds }),
+      ),
+    updateShot: (shotId: string, body: ShotUpdate) =>
+      apiFetch<ShotRead>(`/api/shots/${encodeURIComponent(shotId)}`, jsonInit("PATCH", body)),
+    deleteShot: (shotId: string) => apiFetch<void>(`/api/shots/${encodeURIComponent(shotId)}`, { method: "DELETE" }),
   },
   products: {
     list: (params: ListParams = {}) => apiFetch<Page<ProductSummary>>(`/api/products${query({ ...params })}`),

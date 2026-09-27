@@ -200,6 +200,23 @@ API: `POST /api/products/{id}/cutout`, `POST /api/products/{id}/scene`, `GET /ap
 
 Limits: an influencer *holding* the product is not composited in this phase (the product would have to be AI-rendered — see H2 in the plan); relighting of the product itself is intentionally not done because it would change its pixels. Verified here: rembg 2.0.85 API, BiRefNet-lite end-to-end on CPU (~40 s per 1024² image in this container). Unverified until your machine: CUDA speed of onnxruntime-gpu on RTX 50-series.
 
+## Script + Storyboard (Phase 9)
+
+Storyboard → pick a project → **Write script with LLM** (or **Use template**) → edit, add, delete and drag shots into order. Every run creates a new storyboard version; older versions stay in the DB.
+
+**Local LLM (no cloud):**
+- **Ollama** (default `ollama_default` = `qwen3:8b`): install Ollama, `ollama pull qwen3:8b`. Requests use `format` = the script's JSON schema, `think: false` and `keep_alive: 0` (the model is unloaded right after, so FLUX/video get the VRAM).
+- **llama-server** (`llamacpp_local`): start `llama-server -m <model.gguf> --port 8080` yourself; requests use `response_format: {"type": "json_object", "schema": …}`.
+- Only loopback URLs (`127.0.0.1`, `::1`, `localhost`) are accepted. Change models/URLs in `backend/config/models.yaml`.
+
+**How facts stay correct (FactGuard):** the LLM sees your verified facts as placeholders (`{{product.price}} = 1.299 TRY`) and must write the placeholder, never the value. Audience-facing text (title, hook, dialogue, on-screen text, CTA) is rejected if it types its own numbers, currencies or units, uses an unknown placeholder, makes medical/"guaranteed"/"#1"/award claims that are not in your input, or (for real estate/land) mentions zoning, parcel, title deed, road, electricity or water without a verified value. Rejected output gets one repair round with the reasons; if it still fails (or the LLM is not running), a deterministic template built only from verified placeholders is used. The UI shows which one you got and why. Your brief and product/property descriptions count as verified input; text you type into a shot yourself is stored as written.
+
+Shots carry a default production method and disclosure label (talking head → lip-sync / AI generated, product close-up → original product composite / AI enhanced, property shots → real footage, text/CTA cards → motion graphics / no AI); both can be changed per shot. Durations are scaled to the project length.
+
+API: `POST /api/projects/{id}/script` (job `script.generate`), `GET /api/projects/{id}/scripts`, `GET /api/projects/{id}/storyboard`, `GET /api/storyboards/{id}`, `POST /api/storyboards/{id}/shots`, `PUT /api/storyboards/{id}/order`, `PATCH /api/shots/{id}`, `DELETE /api/shots/{id}`.
+
+Unverified until your machine: script quality/Turkish fluency of the chosen local model and its JSON-schema compliance rate (the API contract itself is tested against stubs of the documented endpoints).
+
 ## Checks
 
 ```bash

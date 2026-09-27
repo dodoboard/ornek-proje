@@ -28,7 +28,9 @@ CameraMotion = Literal[
 GenerationMethod = Literal[
     "ai_image", "ai_video", "ffmpeg_motion", "real_footage", "lipsync", "product_composite"
 ]
-DisclosureLabel = Literal["ai_generated", "ai_enhanced", "representative_visualization", "real_footage"]
+DisclosureLabel = Literal[
+    "ai_generated", "ai_enhanced", "representative_visualization", "real_footage", "no_ai"
+]
 
 Short = Annotated[str, StringConstraints(strip_whitespace=True, max_length=200)]
 Medium = Annotated[str, StringConstraints(strip_whitespace=True, max_length=500)]
@@ -51,7 +53,7 @@ DEFAULT_DISCLOSURE: dict[GenerationMethod, DisclosureLabel] = {
     "ai_video": "ai_generated",
     "lipsync": "ai_generated",
     "product_composite": "ai_enhanced",
-    "ffmpeg_motion": "ai_enhanced",
+    "ffmpeg_motion": "no_ai",
     "real_footage": "real_footage",
 }
 

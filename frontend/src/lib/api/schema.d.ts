@@ -588,6 +588,60 @@ export interface paths {
         patch: operations["update_project_api_projects__project_id__patch"];
         trace?: never;
     };
+    "/api/projects/{project_id}/script": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Script
+         * @description Write a script with the local LLM (facts only via placeholders); falls back to a template.
+         */
+        post: operations["generate_script_api_projects__project_id__script_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/projects/{project_id}/scripts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Scripts */
+        get: operations["list_scripts_api_projects__project_id__scripts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/projects/{project_id}/storyboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Latest Storyboard */
+        get: operations["latest_storyboard_api_projects__project_id__storyboard_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/properties": {
         parameters: {
             query?: never;
@@ -675,6 +729,75 @@ export interface paths {
         head?: never;
         /** Patch Settings */
         patch: operations["patch_settings_api_settings_patch"];
+        trace?: never;
+    };
+    "/api/shots/{shot_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Shot */
+        delete: operations["delete_shot_api_shots__shot_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Shot */
+        patch: operations["update_shot_api_shots__shot_id__patch"];
+        trace?: never;
+    };
+    "/api/storyboards/{storyboard_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Storyboard */
+        get: operations["get_storyboard_api_storyboards__storyboard_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/storyboards/{storyboard_id}/order": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Reorder */
+        put: operations["reorder_api_storyboards__storyboard_id__order_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/storyboards/{storyboard_id}/shots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Shot */
+        post: operations["add_shot_api_storyboards__storyboard_id__shots_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/system": {
@@ -2250,6 +2373,62 @@ export interface components {
          * @enum {string}
          */
         ProviderStatus: "available" | "model_missing" | "not_installed" | "not_implemented" | "disabled";
+        /** ScriptGenerateRequest */
+        ScriptGenerateRequest: {
+            /**
+             * Brief
+             * @description Your notes for the script (treated as verified input).
+             * @default
+             */
+            brief?: string;
+            /** Llm Model Key */
+            llm_model_key?: string | null;
+            /**
+             * Template Only
+             * @description Skip the LLM and use the deterministic template.
+             * @default false
+             */
+            template_only?: boolean;
+        };
+        /** ScriptRead */
+        ScriptRead: {
+            /** Attempts */
+            attempts: {
+                [key: string]: unknown;
+            }[];
+            /** Brief */
+            brief: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Cta */
+            cta: string;
+            /** Fact Report */
+            fact_report: {
+                [key: string]: unknown;
+            };
+            /** Hook */
+            hook: string;
+            /** Id */
+            id: string;
+            /** Language */
+            language: string;
+            /** Llm Model */
+            llm_model: string | null;
+            /** Project Id */
+            project_id: string;
+            /** Source */
+            source: string;
+            /** Title */
+            title: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
         /** SeedRecord */
         SeedRecord: {
             /** Asset Id */
@@ -2273,6 +2452,116 @@ export interface components {
             /** Asset Id */
             asset_id: string;
         };
+        /** ShotCreate */
+        ShotCreate: {
+            /** Camera */
+            camera?: ("wide" | "medium" | "close_up" | "extreme_close_up" | "over_the_shoulder" | "top_down") | null;
+            /** Camera Motion */
+            camera_motion?: ("static" | "slow_push_in" | "pull_out" | "pan_left" | "pan_right" | "tilt_up" | "tilt_down" | "orbit" | "handheld") | null;
+            /** Description */
+            description?: string | null;
+            /** Dialogue */
+            dialogue?: string | null;
+            /** Disclosure Label */
+            disclosure_label?: ("ai_generated" | "ai_enhanced" | "representative_visualization" | "real_footage" | "no_ai") | null;
+            /**
+             * Duration S
+             * @default 3
+             */
+            duration_s?: number | null;
+            /** Generation Method */
+            generation_method?: ("ai_image" | "ai_video" | "ffmpeg_motion" | "real_footage" | "lipsync" | "product_composite") | null;
+            /** On Screen Text */
+            on_screen_text?: string | null;
+            /**
+             * Position
+             * @description Insert position (default: end).
+             */
+            position?: number | null;
+            /**
+             * Type
+             * @default broll
+             * @enum {string}
+             */
+            type?: "hook" | "talking_head" | "product_closeup" | "product_in_use" | "broll" | "property_exterior" | "property_interior" | "land_overview" | "text_card" | "cta";
+            /** Visual Prompt */
+            visual_prompt?: string | null;
+        };
+        /** ShotOrder */
+        ShotOrder: {
+            /** Shot Ids */
+            shot_ids: string[];
+        };
+        /** ShotRead */
+        ShotRead: {
+            /** Camera */
+            camera: string;
+            /** Camera Motion */
+            camera_motion: string;
+            /** Clip Asset Id */
+            clip_asset_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Description */
+            description: string;
+            /** Dialogue */
+            dialogue: string;
+            /** Disclosure Label */
+            disclosure_label: string;
+            /** Duration S */
+            duration_s: number;
+            /** Edited */
+            edited: boolean;
+            /** Generation Method */
+            generation_method: string;
+            /** Id */
+            id: string;
+            /** Keyframe Asset Id */
+            keyframe_asset_id: string | null;
+            /** On Screen Text */
+            on_screen_text: string;
+            /** Position */
+            position: number;
+            /** Status */
+            status: string;
+            /** Storyboard Id */
+            storyboard_id: string;
+            /** Type */
+            type: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Visual Prompt */
+            visual_prompt: string;
+        };
+        /** ShotUpdate */
+        ShotUpdate: {
+            /** Camera */
+            camera?: ("wide" | "medium" | "close_up" | "extreme_close_up" | "over_the_shoulder" | "top_down") | null;
+            /** Camera Motion */
+            camera_motion?: ("static" | "slow_push_in" | "pull_out" | "pan_left" | "pan_right" | "tilt_up" | "tilt_down" | "orbit" | "handheld") | null;
+            /** Description */
+            description?: string | null;
+            /** Dialogue */
+            dialogue?: string | null;
+            /** Disclosure Label */
+            disclosure_label?: ("ai_generated" | "ai_enhanced" | "representative_visualization" | "real_footage" | "no_ai") | null;
+            /** Duration S */
+            duration_s?: number | null;
+            /** Generation Method */
+            generation_method?: ("ai_image" | "ai_video" | "ffmpeg_motion" | "real_footage" | "lipsync" | "product_composite") | null;
+            /** On Screen Text */
+            on_screen_text?: string | null;
+            /** Type */
+            type?: ("hook" | "talking_head" | "product_closeup" | "product_in_use" | "broll" | "property_exterior" | "property_interior" | "land_overview" | "text_card" | "cta") | null;
+            /** Visual Prompt */
+            visual_prompt?: string | null;
+        };
         /** StorageStatus */
         StorageStatus: {
             /** Data Dir */
@@ -2283,6 +2572,33 @@ export interface components {
             total_gb: number;
             /** Used Gb */
             used_gb: number;
+        };
+        /** StoryboardRead */
+        StoryboardRead: {
+            /** Aspect Ratio */
+            aspect_ratio: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Id */
+            id: string;
+            /** Project Id */
+            project_id: string;
+            /** Script Id */
+            script_id: string | null;
+            /** Shots */
+            shots: components["schemas"]["ShotRead"][];
+            /** Total Duration S */
+            total_duration_s: number;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /** Version */
+            version: number;
         };
         /** SystemResponse */
         SystemResponse: {
@@ -3790,6 +4106,103 @@ export interface operations {
             };
         };
     };
+    generate_script_api_projects__project_id__script_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ScriptGenerateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_scripts_api_projects__project_id__scripts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ScriptRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    latest_storyboard_api_projects__project_id__storyboard_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoryboardRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_properties_api_properties_get: {
         parameters: {
             query?: {
@@ -4057,6 +4470,171 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PreferencesRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_shot_api_shots__shot_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_shot_api_shots__shot_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                shot_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShotUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ShotRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_storyboard_api_storyboards__storyboard_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                storyboard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoryboardRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_api_storyboards__storyboard_id__order_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                storyboard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShotOrder"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoryboardRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_shot_api_storyboards__storyboard_id__shots_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                storyboard_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShotCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StoryboardRead"];
                 };
             };
             /** @description Validation Error */

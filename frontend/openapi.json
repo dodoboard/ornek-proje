@@ -4783,6 +4783,125 @@
         "title": "ProviderStatus",
         "type": "string"
       },
+      "ScriptGenerateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "brief": {
+            "default": "",
+            "description": "Your notes for the script (treated as verified input).",
+            "maxLength": 2000,
+            "title": "Brief",
+            "type": "string"
+          },
+          "llm_model_key": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Model Key"
+          },
+          "template_only": {
+            "default": false,
+            "description": "Skip the LLM and use the deterministic template.",
+            "title": "Template Only",
+            "type": "boolean"
+          }
+        },
+        "title": "ScriptGenerateRequest",
+        "type": "object"
+      },
+      "ScriptRead": {
+        "properties": {
+          "attempts": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Attempts",
+            "type": "array"
+          },
+          "brief": {
+            "title": "Brief",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "cta": {
+            "title": "Cta",
+            "type": "string"
+          },
+          "fact_report": {
+            "additionalProperties": true,
+            "title": "Fact Report",
+            "type": "object"
+          },
+          "hook": {
+            "title": "Hook",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "llm_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Model"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "updated_at",
+          "project_id",
+          "source",
+          "llm_model",
+          "language",
+          "title",
+          "hook",
+          "cta",
+          "brief",
+          "attempts",
+          "fact_report"
+        ],
+        "title": "ScriptRead",
+        "type": "object"
+      },
       "SeedRecord": {
         "properties": {
           "asset_id": {
@@ -4835,6 +4954,490 @@
         "title": "SetViewRequest",
         "type": "object"
       },
+      "ShotCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "camera": {
+            "anyOf": [
+              {
+                "enum": [
+                  "wide",
+                  "medium",
+                  "close_up",
+                  "extreme_close_up",
+                  "over_the_shoulder",
+                  "top_down"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera"
+          },
+          "camera_motion": {
+            "anyOf": [
+              {
+                "enum": [
+                  "static",
+                  "slow_push_in",
+                  "pull_out",
+                  "pan_left",
+                  "pan_right",
+                  "tilt_up",
+                  "tilt_down",
+                  "orbit",
+                  "handheld"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Motion"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "dialogue": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dialogue"
+          },
+          "disclosure_label": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ai_generated",
+                  "ai_enhanced",
+                  "representative_visualization",
+                  "real_footage",
+                  "no_ai"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disclosure Label"
+          },
+          "duration_s": {
+            "anyOf": [
+              {
+                "maximum": 60.0,
+                "minimum": 0.5,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 3,
+            "title": "Duration S"
+          },
+          "generation_method": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ai_image",
+                  "ai_video",
+                  "ffmpeg_motion",
+                  "real_footage",
+                  "lipsync",
+                  "product_composite"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation Method"
+          },
+          "on_screen_text": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "On Screen Text"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Insert position (default: end).",
+            "title": "Position"
+          },
+          "type": {
+            "default": "broll",
+            "enum": [
+              "hook",
+              "talking_head",
+              "product_closeup",
+              "product_in_use",
+              "broll",
+              "property_exterior",
+              "property_interior",
+              "land_overview",
+              "text_card",
+              "cta"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "visual_prompt": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Visual Prompt"
+          }
+        },
+        "title": "ShotCreate",
+        "type": "object"
+      },
+      "ShotOrder": {
+        "additionalProperties": false,
+        "properties": {
+          "shot_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "minItems": 1,
+            "title": "Shot Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "shot_ids"
+        ],
+        "title": "ShotOrder",
+        "type": "object"
+      },
+      "ShotRead": {
+        "properties": {
+          "camera": {
+            "title": "Camera",
+            "type": "string"
+          },
+          "camera_motion": {
+            "title": "Camera Motion",
+            "type": "string"
+          },
+          "clip_asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clip Asset Id"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "dialogue": {
+            "title": "Dialogue",
+            "type": "string"
+          },
+          "disclosure_label": {
+            "title": "Disclosure Label",
+            "type": "string"
+          },
+          "duration_s": {
+            "title": "Duration S",
+            "type": "number"
+          },
+          "edited": {
+            "title": "Edited",
+            "type": "boolean"
+          },
+          "generation_method": {
+            "title": "Generation Method",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "keyframe_asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Keyframe Asset Id"
+          },
+          "on_screen_text": {
+            "title": "On Screen Text",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "storyboard_id": {
+            "title": "Storyboard Id",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "visual_prompt": {
+            "title": "Visual Prompt",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "updated_at",
+          "storyboard_id",
+          "position",
+          "type",
+          "duration_s",
+          "description",
+          "dialogue",
+          "on_screen_text",
+          "visual_prompt",
+          "camera",
+          "camera_motion",
+          "generation_method",
+          "disclosure_label",
+          "edited",
+          "status",
+          "keyframe_asset_id",
+          "clip_asset_id"
+        ],
+        "title": "ShotRead",
+        "type": "object"
+      },
+      "ShotUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "camera": {
+            "anyOf": [
+              {
+                "enum": [
+                  "wide",
+                  "medium",
+                  "close_up",
+                  "extreme_close_up",
+                  "over_the_shoulder",
+                  "top_down"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera"
+          },
+          "camera_motion": {
+            "anyOf": [
+              {
+                "enum": [
+                  "static",
+                  "slow_push_in",
+                  "pull_out",
+                  "pan_left",
+                  "pan_right",
+                  "tilt_up",
+                  "tilt_down",
+                  "orbit",
+                  "handheld"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Motion"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "dialogue": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dialogue"
+          },
+          "disclosure_label": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ai_generated",
+                  "ai_enhanced",
+                  "representative_visualization",
+                  "real_footage",
+                  "no_ai"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disclosure Label"
+          },
+          "duration_s": {
+            "anyOf": [
+              {
+                "maximum": 60.0,
+                "minimum": 0.5,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration S"
+          },
+          "generation_method": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ai_image",
+                  "ai_video",
+                  "ffmpeg_motion",
+                  "real_footage",
+                  "lipsync",
+                  "product_composite"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation Method"
+          },
+          "on_screen_text": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "On Screen Text"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "enum": [
+                  "hook",
+                  "talking_head",
+                  "product_closeup",
+                  "product_in_use",
+                  "broll",
+                  "property_exterior",
+                  "property_interior",
+                  "land_overview",
+                  "text_card",
+                  "cta"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "visual_prompt": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Visual Prompt"
+          }
+        },
+        "title": "ShotUpdate",
+        "type": "object"
+      },
       "StorageStatus": {
         "properties": {
           "data_dir": {
@@ -4861,6 +5464,71 @@
           "free_gb"
         ],
         "title": "StorageStatus",
+        "type": "object"
+      },
+      "StoryboardRead": {
+        "properties": {
+          "aspect_ratio": {
+            "title": "Aspect Ratio",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "script_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Script Id"
+          },
+          "shots": {
+            "items": {
+              "$ref": "#/components/schemas/ShotRead"
+            },
+            "title": "Shots",
+            "type": "array"
+          },
+          "total_duration_s": {
+            "title": "Total Duration S",
+            "type": "number"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "created_at",
+          "updated_at",
+          "project_id",
+          "script_id",
+          "version",
+          "aspect_ratio",
+          "shots",
+          "total_duration_s"
+        ],
+        "title": "StoryboardRead",
         "type": "object"
       },
       "SystemResponse": {
@@ -7228,6 +7896,147 @@
         ]
       }
     },
+    "/api/projects/{project_id}/script": {
+      "post": {
+        "description": "Write a script with the local LLM (facts only via placeholders); falls back to a template.",
+        "operationId": "generate_script_api_projects__project_id__script_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScriptGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Script",
+        "tags": [
+          "storyboards"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/scripts": {
+      "get": {
+        "operationId": "list_scripts_api_projects__project_id__scripts_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScriptRead"
+                  },
+                  "title": "Response List Scripts Api Projects  Project Id  Scripts Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Scripts",
+        "tags": [
+          "storyboards"
+        ]
+      }
+    },
+    "/api/projects/{project_id}/storyboard": {
+      "get": {
+        "operationId": "latest_storyboard_api_projects__project_id__storyboard_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "title": "Project Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryboardRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Latest Storyboard",
+        "tags": [
+          "storyboards"
+        ]
+      }
+    },
     "/api/properties": {
       "get": {
         "operationId": "list_properties_api_properties_get",
@@ -7634,6 +8443,237 @@
         "summary": "Patch Settings",
         "tags": [
           "settings"
+        ]
+      }
+    },
+    "/api/shots/{shot_id}": {
+      "delete": {
+        "operationId": "delete_shot_api_shots__shot_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shot_id",
+            "required": true,
+            "schema": {
+              "title": "Shot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Shot",
+        "tags": [
+          "storyboards"
+        ]
+      },
+      "patch": {
+        "operationId": "update_shot_api_shots__shot_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "shot_id",
+            "required": true,
+            "schema": {
+              "title": "Shot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShotUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShotRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Shot",
+        "tags": [
+          "storyboards"
+        ]
+      }
+    },
+    "/api/storyboards/{storyboard_id}": {
+      "get": {
+        "operationId": "get_storyboard_api_storyboards__storyboard_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storyboard_id",
+            "required": true,
+            "schema": {
+              "title": "Storyboard Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryboardRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Storyboard",
+        "tags": [
+          "storyboards"
+        ]
+      }
+    },
+    "/api/storyboards/{storyboard_id}/order": {
+      "put": {
+        "operationId": "reorder_api_storyboards__storyboard_id__order_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storyboard_id",
+            "required": true,
+            "schema": {
+              "title": "Storyboard Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShotOrder"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryboardRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reorder",
+        "tags": [
+          "storyboards"
+        ]
+      }
+    },
+    "/api/storyboards/{storyboard_id}/shots": {
+      "post": {
+        "operationId": "add_shot_api_storyboards__storyboard_id__shots_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storyboard_id",
+            "required": true,
+            "schema": {
+              "title": "Storyboard Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ShotCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoryboardRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Shot",
+        "tags": [
+          "storyboards"
         ]
       }
     },
