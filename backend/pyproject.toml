@@ -1,0 +1,39 @@
+[project]
+name = "ai-influencer-studio-backend"
+version = "0.1.0"
+description = "Local-first AI influencer studio backend"
+requires-python = ">=3.12,<3.13"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "RUF"]
+ignore = ["S101"]
+# Turkish dotless i is intentional in content filters.
+allowed-confusables = ["ı"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["alembic"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S"]
+"alembic/versions/**" = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+files = ["app"]
+# ModelManager.use(kind, <abstract provider base>) is intentional (isinstance check).
+disable_error_code = ["type-abstract"]
+
+[[tool.mypy.overrides]]
+# Optional heavy ML dependencies are imported lazily inside providers.
+module = ["torch", "torch.*", "diffusers", "diffusers.*", "transformers", "transformers.*", "accelerate", "accelerate.*", "rembg", "rembg.*", "onnxruntime"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,10 @@
+# AI stack for the worker. Install PyTorch FIRST with the CUDA build for your GPU
+# (RTX 50-series / Blackwell needs CUDA 12.8+ wheels) — see README "PyTorch".
+# Versions: latest on PyPI at Phase 5; the exact compatible set is confirmed by
+# `python scripts/validate_env.py --smoke` on a GPU machine.
+-r base.txt
+diffusers==0.40.0
+transformers==5.17.0
+accelerate==1.15.0
+safetensors==0.8.0
+ftfy==6.3.1  # used by diffusers Wan pipelines to clean prompts
