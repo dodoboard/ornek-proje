@@ -44,6 +44,8 @@ def _register_builtin() -> None:
     from app.providers.segmentation.color_key import ColorKeySegmentationProvider
     from app.providers.segmentation.rembg_onnx import RembgSegmentationProvider
     from app.providers.video.fake import FakeVideoProvider
+    from app.providers.video.ffmpeg_motion import FfmpegMotionProvider
+    from app.providers.video.wan_diffusers import WanDiffusersProvider
 
     IMPLEMENTED.setdefault("flux2_diffusers", Flux2DiffusersProvider)
     IMPLEMENTED.setdefault("ollama", OllamaProvider)
@@ -53,6 +55,8 @@ def _register_builtin() -> None:
     IMPLEMENTED.setdefault("color_key", ColorKeySegmentationProvider)
     IMPLEMENTED.setdefault("dev_fake_image", FakeImageProvider)
     IMPLEMENTED.setdefault("dev_fake_video", FakeVideoProvider)
+    IMPLEMENTED.setdefault("wan_diffusers", WanDiffusersProvider)
+    IMPLEMENTED.setdefault("ffmpeg_motion", FfmpegMotionProvider)
 
 
 class ProviderInfo(BaseModel):

@@ -5645,6 +5645,198 @@
         "title": "ValidationError",
         "type": "object"
       },
+      "VideoGenerateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "character_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Character Id"
+          },
+          "duration_s": {
+            "default": 5.0,
+            "maximum": 20.0,
+            "minimum": 0.5,
+            "title": "Duration S",
+            "type": "number"
+          },
+          "fps": {
+            "anyOf": [
+              {
+                "maximum": 60.0,
+                "minimum": 8.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fps"
+          },
+          "guidance_scale": {
+            "anyOf": [
+              {
+                "maximum": 30.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Guidance Scale"
+          },
+          "height": {
+            "default": 1280,
+            "maximum": 3840.0,
+            "minimum": 128.0,
+            "title": "Height",
+            "type": "integer"
+          },
+          "image_asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "First frame (image-to-video).",
+            "title": "Image Asset Id"
+          },
+          "last_image_asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Last frame, if the model supports it.",
+            "title": "Last Image Asset Id"
+          },
+          "model_key": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Key"
+          },
+          "motion": {
+            "default": "static",
+            "enum": [
+              "static",
+              "slow_push_in",
+              "pull_out",
+              "pan_left",
+              "pan_right",
+              "tilt_up",
+              "tilt_down",
+              "orbit",
+              "handheld"
+            ],
+            "title": "Motion",
+            "type": "string"
+          },
+          "motion_strength": {
+            "default": 1.0,
+            "maximum": 2.0,
+            "minimum": 0.0,
+            "title": "Motion Strength",
+            "type": "number"
+          },
+          "negative_prompt": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Negative Prompt"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Project Id"
+          },
+          "prompt": {
+            "default": "",
+            "description": "Required for AI models; optional for camera motion.",
+            "maxLength": 2000,
+            "title": "Prompt",
+            "type": "string"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "maximum": 4294967279.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "shot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Storyboard shot that receives this clip.",
+            "title": "Shot Id"
+          },
+          "steps": {
+            "anyOf": [
+              {
+                "maximum": 150.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Steps"
+          },
+          "width": {
+            "default": 704,
+            "maximum": 3840.0,
+            "minimum": 128.0,
+            "title": "Width",
+            "type": "integer"
+          }
+        },
+        "title": "VideoGenerateRequest",
+        "type": "object"
+      },
       "WorkerStatus": {
         "properties": {
           "current_job_id": {
@@ -6759,6 +6951,48 @@
           }
         },
         "summary": "Edit Image",
+        "tags": [
+          "generate"
+        ]
+      }
+    },
+    "/api/generate/video": {
+      "post": {
+        "description": "Image-to-video / text-to-video with the local video model, or camera motion without AI.",
+        "operationId": "generate_video_api_generate_video_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VideoGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Generate Video",
         "tags": [
           "generate"
         ]

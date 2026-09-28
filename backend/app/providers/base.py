@@ -82,9 +82,18 @@ class VideoCapabilities(Capabilities):
     last_frame_conditioning: bool = False
     negative_prompt: bool = False
     guidance: bool = False
+    default_guidance: float | None = None
+    #: The model follows `motion` exactly (deterministic camera moves); AI models only get it as prompt text.
+    camera_control: bool = False
+    #: True for providers that do not synthesise new pixels (disclosure: no AI).
+    uses_ai: bool = True
     fps: tuple[int, ...] = (24,)
     max_frames: int = 121
+    #: Valid frame counts are `frame_step * k + 1` (Wan: 4); 1 means any count.
+    frame_step: int = 1
     size_multiple: int = 16
+    min_size: int = 256
+    max_size: int = 1280
     default_steps: int = 30
 
 
@@ -229,6 +238,8 @@ class VideoRequest:
     last_image: Path | None = None
     guidance_scale: float | None = None
     negative_prompt: str | None = None
+    motion: str = "static"
+    motion_strength: float = 1.0
 
 
 class VideoGenerationProvider(Provider):

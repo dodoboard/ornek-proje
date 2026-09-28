@@ -217,6 +217,22 @@ API: `POST /api/projects/{id}/script` (job `script.generate`), `GET /api/project
 
 Unverified until your machine: script quality/Turkish fluency of the chosen local model and its JSON-schema compliance rate (the API contract itself is tested against stubs of the documented endpoints).
 
+## Video models (Phase 10)
+
+| Model key | What it does | AI? |
+|---|---|---|
+| `wan22_ti2v_5b` (default) | Wan 2.2 TI2V-5B via Diffusers: image-to-video and text-to-video, 24 fps, sizes in multiples of 32 (720p = 1280×704 / 704×1280), frames `4k+1` (121 = 5 s) | yes |
+| `camera_motion` | Smooth push-in / pull-out / pan / tilt / orbit / handheld over your image, rendered with sub-pixel crops and encoded by FFmpeg | **no** — no pixel is invented; used for product close-ups, property photos and text cards |
+| `ltx2` | Listed, **not integrated**: LTX-2 generates audio+video with a large model; not verified on 16 GB VRAM / 32 GB RAM | — |
+
+- **Install Wan (worker machine):** `pip install -r backend/requirements/ai.txt` (adds `ftfy`, used by the Diffusers Wan pipelines), then `cd backend && python scripts/download_models.py video:wan22_ti2v_5b`. Read the license first.
+- **16 GB VRAM:** the Wan2.2 README states TI2V-5B needs ~24 GB with offload in their own code. Here Balanced uses model CPU offload **plus VAE tiling** (the 121-frame decode is the memory peak); Low VRAM uses sequential offload. Start with 480–704 px drafts and short clips; speed and the largest size that fits are **not verified** on your RTX 5080 — measure them.
+- The repo's `model_index.json` decides whether the stored class is `WanPipeline` or `WanImageToVideoPipeline`; the other one is built with `from_pipe` (same weights, no second copy in memory).
+- Frames are written as PNG and encoded by FFmpeg (H.264, yuv420p, `+faststart`); the MP4 `comment` tag holds the AI-disclosure JSON (model, seed, sources, `disclosure_label`). Camera-motion clips are stored with `generated_with_ai: false`.
+- Validation happens before queueing: start image required for image-only models, size multiple, fps, max frames (duration is snapped to the model's frame grid), negative prompt/guidance only where supported, adult-only prompts, consent for real-person characters.
+
+API: `POST /api/generate/video` (job `video.generate`; optional `shot_id` attaches the clip to a storyboard shot), `GET /api/generations?kind=video`, `GET /api/assets/{id}/thumbnail` (first frame). The Video Studio UI arrives in Phase 11.
+
 ## Checks
 
 ```bash

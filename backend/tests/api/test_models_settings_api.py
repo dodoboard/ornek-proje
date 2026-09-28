@@ -24,8 +24,10 @@ def test_models_lists_every_kind_with_status(client: TestClient) -> None:
     assert klein["is_default"] is True
     assert klein["capabilities"]["negative_prompt"] is False
     assert klein["capabilities"]["guidance"] is False  # distilled
-    video = kinds["video"]
-    assert all(p["status"] == "not_implemented" for p in video["providers"])
+    video = {p["key"]: p for p in kinds["video"]["providers"]}
+    assert video["ltx2"]["status"] == "not_implemented"
+    assert video["wan22_ti2v_5b"]["capabilities"]["frame_step"] == 4
+    assert video["camera_motion"]["capabilities"]["uses_ai"] is False
 
 
 def test_models_include_dev_fakes_when_enabled(settings: Settings) -> None:

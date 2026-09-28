@@ -45,9 +45,12 @@ def check_against_capabilities(request: ImageGenerateRequest, caps: ImageCapabil
 
 
 class _RefersToAssets(Protocol):
-    project_id: str | None
-    character_id: str | None
-    reference_asset_ids: list[str]
+    @property
+    def project_id(self) -> str | None: ...
+    @property
+    def character_id(self) -> str | None: ...
+    @property
+    def reference_asset_ids(self) -> list[str]: ...
 
 
 def resolve_references(session: Session, storage: StorageService, request: _RefersToAssets) -> list[Path]:

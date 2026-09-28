@@ -48,14 +48,15 @@ DIFFUSERS_REQUIREMENTS: dict[str, tuple[str, ...]] = {
                                   "callback_on_step_end"),
     "Flux2Pipeline": ("image", "prompt", "guidance_scale", "callback_on_step_end"),
     "WanPipeline": ("prompt", "negative_prompt", "num_frames", "callback_on_step_end"),
-    "WanImageToVideoPipeline": ("image", "prompt", "negative_prompt", "num_frames",
-                                "callback_on_step_end"),
+    "WanImageToVideoPipeline": ("image", "prompt", "negative_prompt", "num_frames", "last_image",
+                                "output_type", "callback_on_step_end"),
     "LTX2ImageToVideoPipeline": ("image", "prompt", "negative_prompt", "callback_on_step_end"),
 }
 
 OPTIONAL_PACKAGES: dict[str, str] = {
     "transformers": "FLUX.2 / Wan text encoders",
     "accelerate": "enable_model_cpu_offload",
+    "ftfy": "Wan prompt cleaning (diffusers Wan pipelines)",
     "huggingface_hub": "model download / --check-hf",
     "faster_whisper": "captions (ASR)",
     "ctranslate2": "faster-whisper backend",

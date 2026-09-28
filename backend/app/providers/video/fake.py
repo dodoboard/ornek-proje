@@ -35,7 +35,7 @@ class FakeVideoProvider(VideoGenerationProvider):
     def capabilities(self) -> VideoCapabilities:
         return VideoCapabilities(
             image_to_video=True, text_to_video=True, negative_prompt=False, guidance=False,
-            fps=(24, 25, 30), max_frames=241, size_multiple=2, default_steps=1,
+            fps=(24, 25, 30), max_frames=241, size_multiple=2, min_size=64, max_size=1920, default_steps=1,
         )  # fmt: skip
 
     def load(self, device: DeviceInfo, profile: PerformanceProfile) -> None:

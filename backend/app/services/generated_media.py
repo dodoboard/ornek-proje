@@ -11,10 +11,11 @@ from PIL import Image, ImageDraw, ImageFont
 from PIL.PngImagePlugin import PngInfo
 from sqlalchemy.orm import Session
 
-from app.core.errors import UnsupportedFormatError
+from app.core.errors import GenerationFailedError, UnsupportedFormatError
 from app.core.ids import IdPrefix, new_id
 from app.models.asset import Asset
 from app.models.enums import AssetKind, AssetSource
+from app.providers.base import SubprocessRunner
 from app.services.storage import StorageService
 
 THUMBNAIL_EDGE = 512
@@ -139,11 +140,63 @@ def store_derived_image(
     return asset
 
 
+def store_generated_video(
+    session: Session,
+    storage: StorageService,
+    source: Path,
+    disclosure: dict[str, Any],
+    *,
+    ffmpeg: str,
+    ffprobe_path: Path | None,
+    run: SubprocessRunner,
+    temp_dir: Path,
+    ai_generated: bool = True,
+) -> Asset:
+    """Copy (no re-encode) into outputs with the disclosure in the MP4 `comment` tag, plus a thumbnail."""
+    from app.services.media_probe import MP4, validate_av
+
+    asset_id = new_id(IdPrefix.ASSET)
+    path = storage.output_path(asset_id, "videos", ".mp4")
+    comment = json.dumps(disclosure, ensure_ascii=False, sort_keys=True)
+    remux = [
+        ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-i", str(source), "-map", "0", "-c", "copy",
+        "-metadata", f"comment={comment}", "-movflags", "+faststart", str(path),
+    ]  # fmt: skip
+    if run(remux, timeout_s=300).returncode != 0 or not path.is_file():
+        raise GenerationFailedError("Could not write the video file.")
+    still = temp_dir / f"{asset_id}_thumb.png"
+    grab = [ffmpeg, "-hide_banner", "-loglevel", "error", "-y", "-i", str(path), "-frames:v", "1", str(still)]
+    if run(grab, timeout_s=120).returncode == 0 and still.is_file():
+        with Image.open(still) as frame:
+            write_thumbnail(frame, storage.thumbnail_path(asset_id))
+    info = validate_av(path, MP4, ffprobe_path)
+    data = path.read_bytes()
+    asset = Asset(
+        id=asset_id,
+        kind=AssetKind.VIDEO,
+        source=AssetSource.GENERATED,
+        path=storage.relative(path),
+        mime="video/mp4",
+        size_bytes=len(data),
+        checksum_sha256=hashlib.sha256(data).hexdigest(),
+        width=info.width,
+        height=info.height,
+        duration_s=info.duration_s,
+        original_filename=None,
+        ai_generated=ai_generated,
+        metadata_json=disclosure,
+    )
+    session.add(asset)
+    return asset
+
+
 def ensure_thumbnail(storage: StorageService, asset: Asset) -> Path:
     """Create the thumbnail on first request (uploads get one lazily)."""
-    if asset.kind is not AssetKind.IMAGE:
-        raise UnsupportedFormatError("Thumbnails are only available for images.")
     path = storage.thumbnail_path(asset.id)
+    if asset.kind is AssetKind.VIDEO and path.is_file():
+        return path  # written when the video was generated
+    if asset.kind is not AssetKind.IMAGE:
+        raise UnsupportedFormatError("Thumbnails are only available for images and generated videos.")
     if not path.is_file():
         with Image.open(storage.resolve(asset.path)) as img:
             write_thumbnail(img, path)

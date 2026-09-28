@@ -76,16 +76,33 @@ video:
   models:
     wan22_ti2v_5b:
       provider: wan_diffusers
-      # Listed in diffusers v0.40.0 docs/api/pipelines/wan.md.
-      # Pipeline class is read from the repo's model_index.json at load time.
+      # Listed in diffusers v0.40.0 docs/api/pipelines/wan.md. The stored pipeline class is read from
+      # the repo's model_index.json at load time; T2V and I2V share the weights (from_pipe).
       repo_id: Wan-AI/Wan2.2-TI2V-5B-Diffusers
       local_path: null
+      # Wan2.2 README: 720p is 1280x704 / 704x1280 at 24 fps. Frames must be 4k+1 (121 = 5 s).
+      fps: [24]
+      max_frames: 121
+      frame_step: 4
+      size_multiple: 32
+      max_size: 1280
+      default_steps: 50  # needs-user-machine: speed/quality trade-off on your GPU
+      default_guidance: 5.0
+      text_to_video: true
+      last_frame_conditioning: false  # WanImageToVideoPipeline accepts last_image; unverified for TI2V-5B
       verification: needs-user-machine
       license_claim: "Apache-2.0 (unverified)"
+      note: "Wan2.2 README: runs on 24 GB with offload; on 16 GB use Balanced/Low VRAM and 480p-704p drafts."
+    camera_motion:
+      provider: ffmpeg_motion
+      verification: verified
+      license_claim: "Project code + FFmpeg (no model weights)"
+      note: "No AI: smooth push-in/pan/tilt over your image. Keeps product and property photos pixel-true."
     ltx2:
       provider: ltx_diffusers
       pipeline_class: LTX2ImageToVideoPipeline
-      # Listed in diffusers v0.40.0 docs/api/pipelines/ltx2.md.
+      # Listed in diffusers v0.40.0 docs/api/pipelines/ltx2.md. Not integrated: it generates audio+video
+      # with a large transformer; running it on 16 GB VRAM / 32 GB RAM is not verified.
       repo_id: Lightricks/LTX-2
       local_path: null
       verification: experimental

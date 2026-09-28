@@ -29,9 +29,11 @@ def test_repo_catalog_parses_every_kind(settings: Settings) -> None:
 
 def test_unimplemented_providers_are_reported_honestly(settings: Settings) -> None:
     infos = {i.key: i for i in ProviderRegistry(settings).describe_all()}
-    assert infos["wan22_ti2v_5b"].status is ProviderStatus.NOT_IMPLEMENTED
-    assert infos["wan22_ti2v_5b"].capabilities is None
+    assert infos["ltx2"].status is ProviderStatus.NOT_IMPLEMENTED
+    assert infos["ltx2"].capabilities is None
     assert infos["ltx2"].maturity is Maturity.EXPERIMENTAL
+    # Wan is integrated; without torch/diffusers it reports what is missing instead of pretending.
+    assert infos["wan22_ti2v_5b"].status in (ProviderStatus.NOT_INSTALLED, ProviderStatus.MODEL_MISSING)
     assert "dev_fake_image" not in infos
     with pytest.raises(ProviderUnavailableError):
         ProviderRegistry(settings).get(ProviderKind.VIDEO)

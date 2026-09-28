@@ -314,6 +314,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/generate/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate Video
+         * @description Image-to-video / text-to-video with the local video model, or camera motion without AI.
+         */
+        post: operations["generate_video_api_generate_video_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/generations": {
         parameters: {
             query?: never;
@@ -2643,6 +2663,72 @@ export interface components {
             /** Error Type */
             type: string;
         };
+        /** VideoGenerateRequest */
+        VideoGenerateRequest: {
+            /** Character Id */
+            character_id?: string | null;
+            /**
+             * Duration S
+             * @default 5
+             */
+            duration_s?: number;
+            /** Fps */
+            fps?: number | null;
+            /** Guidance Scale */
+            guidance_scale?: number | null;
+            /**
+             * Height
+             * @default 1280
+             */
+            height?: number;
+            /**
+             * Image Asset Id
+             * @description First frame (image-to-video).
+             */
+            image_asset_id?: string | null;
+            /**
+             * Last Image Asset Id
+             * @description Last frame, if the model supports it.
+             */
+            last_image_asset_id?: string | null;
+            /** Model Key */
+            model_key?: string | null;
+            /**
+             * Motion
+             * @default static
+             * @enum {string}
+             */
+            motion?: "static" | "slow_push_in" | "pull_out" | "pan_left" | "pan_right" | "tilt_up" | "tilt_down" | "orbit" | "handheld";
+            /**
+             * Motion Strength
+             * @default 1
+             */
+            motion_strength?: number;
+            /** Negative Prompt */
+            negative_prompt?: string | null;
+            /** Project Id */
+            project_id?: string | null;
+            /**
+             * Prompt
+             * @description Required for AI models; optional for camera motion.
+             * @default
+             */
+            prompt?: string;
+            /** Seed */
+            seed?: number | null;
+            /**
+             * Shot Id
+             * @description Storyboard shot that receives this clip.
+             */
+            shot_id?: string | null;
+            /** Steps */
+            steps?: number | null;
+            /**
+             * Width
+             * @default 704
+             */
+            width?: number;
+        };
         /** WorkerStatus */
         WorkerStatus: {
             /** Current Job Id */
@@ -3389,6 +3475,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["ImageEditRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_video_api_generate_video_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VideoGenerateRequest"];
             };
         };
         responses: {
