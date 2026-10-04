@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protokol Yemeği Planlayıcı</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header no-print">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">★</span>
+      <div>
+        <h1>Protokol Yemeği Planlayıcı</h1>
+        <p class="subtitle">Davetli listesi · protokol sıralaması · oturma düzeni</p>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="guests" aria-selected="true">Davetliler</button>
+      <button role="tab" data-tab="plan" aria-selected="false">Oturma Düzeni</button>
+      <button role="tab" data-tab="ranks" aria-selected="false">Protokol Sıralaması</button>
+      <button role="tab" data-tab="data" aria-selected="false">Veri</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- DAVETLİLER -->
+    <section id="tab-guests" class="tab-panel" role="tabpanel">
+      <div class="grid-2">
+        <form id="guest-form" class="card" autocomplete="off">
+          <h2 id="form-title">Davetli Ekle</h2>
+          <input type="hidden" name="guestId">
+          <div class="row">
+            <label>Unvan / Rütbe<input name="honorific" placeholder="Tümgeneral, Dr., Av."></label>
+          </div>
+          <div class="row two">
+            <label>Ad<input name="firstName" required></label>
+            <label>Soyad<input name="lastName" required></label>
+          </div>
+          <div class="row">
+            <label>Protokol Kategorisi<select name="categoryId" required></select></label>
+          </div>
+          <div class="row two">
+            <label>Taraf
+              <select name="side">
+                <option value="home">Yerli</option>
+                <option value="foreign">Yabancı Heyet</option>
+              </select>
+            </label>
+            <label data-foreign-only>Ülke / Heyet<input name="delegation" placeholder="ör. Azerbaycan"></label>
+          </div>
+          <div class="row two">
+            <label>Davetli Türü
+              <select name="relation">
+                <option value="principal">Asıl Davetli</option>
+                <option value="spouse">Eş</option>
+                <option value="child">Çocuk</option>
+              </select>
+            </label>
+            <label><span id="partner-label">Bağlı Olduğu Kişi</span><select name="partnerId"></select></label>
+          </div>
+          <div class="row two">
+            <label>Dil<input name="language" placeholder="Türkçe, English…"></label>
+            <label>Manuel Öncelik<input name="rankOverride" type="number" step="0.1" placeholder="Kategoriden"></label>
+          </div>
+          <div class="row">
+            <label>Menü / Diyet
+              <select name="diet">
+                <option value="">Standart</option>
+                <option value="vejetaryen">Vejetaryen</option>
+                <option value="vegan">Vegan</option>
+                <option value="glutensiz">Glütensiz</option>
+                <option value="diyabetik">Diyabetik</option>
+                <option value="cocuk">Çocuk Menüsü</option>
+                <option value="koser">Koşer</option>
+                <option value="diger">Diğer (nota bakınız)</option>
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>Alerji / Not<input name="notes" placeholder="Fıstık alerjisi, tekerlekli sandalye…"></label>
+          </div>
+          <fieldset class="checks">
+            <label><input type="checkbox" name="isHost"> Ev sahibi</label>
+            <label><input type="checkbox" name="isCoHost"> İkinci ev sahibi</label>
+            <label><input type="checkbox" name="needsInterpreter"> Tercüman gerekli</label>
+          </fieldset>
+          <div class="actions">
+            <button type="submit" class="primary">Kaydet</button>
+            <button type="button" id="form-reset">Temizle</button>
+          </div>
+        </form>
+
+        <div class="card">
+          <div class="toolbar">
+            <input id="guest-search" type="search" placeholder="Ara: ad, unvan, ülke…" aria-label="Ara">
+            <select id="guest-filter-group" aria-label="Grup filtresi"><option value="">Tüm gruplar</option></select>
+            <select id="guest-filter-side" aria-label="Taraf filtresi">
+              <option value="">Tüm taraflar</option>
+              <option value="home">Yerli</option>
+              <option value="foreign">Yabancı Heyet</option>
+            </select>
+          </div>
+          <div id="guest-stats" class="stats"></div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr><th>#</th><th>Davetli</th><th>Kategori</th><th>Taraf</th><th>Tür</th><th>Menü</th><th></th></tr>
+              </thead>
+              <tbody id="guest-rows"></tbody>
+            </table>
+          </div>
+          <p id="guest-empty" class="empty" hidden>Henüz davetli yok. Formdan ekleyin veya <b>Veri</b> sekmesinden örnek liste yükleyin.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OTURMA DÜZENİ -->
+    <section id="tab-plan" class="tab-panel" role="tabpanel" hidden>
+      <form id="plan-options" class="card no-print options">
+        <label>Etkinlik<input name="eventName" placeholder="ör. Yabancı Heyet Onuruna Akşam Yemeği"></label>
+        <label>Tarih<input name="eventDate" type="date"></label>
+        <label>Yer<input name="eventPlace" placeholder="Orduevi"></label>
+        <label>Masa Tipi
+          <select name="layout">
+            <option value="round">Yuvarlak</option>
+            <option value="rect">Dikdörtgen (karşılıklı)</option>
+          </select>
+        </label>
+        <label>Onur Masası Kişi<input name="headSeats" type="number" min="2" max="40"></label>
+        <label>Diğer Masalar Kişi<input name="seatsPerTable" type="number" min="2" max="40"></label>
+        <label>Eşler
+          <select name="spouseMode">
+            <option value="together">Eşiyle yan yana</option>
+            <option value="byRank">Eşinin protokol sırasıyla (ayrı)</option>
+          </select>
+        </label>
+        <label class="inline"><input type="checkbox" name="childrenTable"> Ayrı çocuk masası</label>
+        <label class="inline"><input type="checkbox" name="mixDelegations"> Karma oturma (yerli/yabancı dönüşümlü)</label>
+        <div class="actions">
+          <button type="submit" class="primary">Düzeni Oluştur</button>
+          <button type="button" id="print-plan">Planı Yazdır</button>
+          <button type="button" id="print-cards">Yer Kartları</button>
+        </div>
+      </form>
+
+      <div id="plan-stale" class="banner warn no-print" hidden>Davetli listesi değişti. Güncel düzen için <b>Düzeni Oluştur</b>’a basın.</div>
+      <ul id="plan-warnings" class="warnings no-print"></ul>
+      <p class="hint no-print">İki koltuğa sırayla tıklayarak yer değiştirebilirsiniz. Koltuk numarası protokol sırasını değil masa konumunu gösterir.</p>
+
+      <header class="print-only print-header">
+        <h1 id="print-title"></h1>
+        <p id="print-sub"></p>
+      </header>
+
+      <div class="legend no-print">
+        <span><i class="sw host"></i>Ev sahibi</span>
+        <span><i class="sw home"></i>Yerli</span>
+        <span><i class="sw foreign"></i>Yabancı heyet</span>
+        <span><i class="sw spouse"></i>Eş</span>
+        <span><i class="sw child"></i>Çocuk</span>
+        <span><i class="sw interp"></i>Tercüman</span>
+      </div>
+
+      <div id="tables" class="tables"></div>
+      <div id="kitchen" class="card kitchen"></div>
+      <div id="cards" class="place-cards print-only"></div>
+    </section>
+
+    <!-- PROTOKOL SIRALAMASI -->
+    <section id="tab-ranks" class="tab-panel" role="tabpanel" hidden>
+      <div class="card">
+        <div class="toolbar">
+          <p class="hint">Düşük değer = yüksek öncelik. Eşler ve çocuklar bağlı oldukları kişinin önceliğini alır. Değerleri kurumunuzun protokol yönergesine göre düzenleyin.</p>
+          <button type="button" id="ranks-reset">Varsayılanlara Dön</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Grup</th><th>Kategori</th><th>Öncelik</th><th>Davetli</th></tr></thead>
+            <tbody id="rank-rows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VERİ -->
+    <section id="tab-data" class="tab-panel" role="tabpanel" hidden>
+      <div class="card data-actions">
+        <h2>Veri İşlemleri</h2>
+        <div class="actions">
+          <button type="button" id="export-json" class="primary">JSON Dışa Aktar</button>
+          <label class="button">JSON İçe Aktar<input type="file" id="import-json" accept="application/json,.json" hidden></label>
+          <button type="button" id="export-csv">Oturma Planı CSV</button>
+          <button type="button" id="load-sample">Örnek Liste Yükle</button>
+          <button type="button" id="clear-all" class="danger">Tümünü Sil</button>
+        </div>
+        <p class="hint">Veriler yalnızca bu tarayıcıda saklanır. Düzenli olarak JSON yedeği alın.</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="js/catalog.js"></script>
+  <script src="js/seating.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/sample.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
